@@ -1,10 +1,12 @@
-import pygame, sys
+import sys
+import pygame
 import game
 import player
 import gamemap
 
 pygame.init()
 screen = pygame.display.set_mode((640, 480))
+
 player.Init()
 
 
@@ -50,12 +52,12 @@ all_sprites_list.add(p)
   
 exit = True
 clock = pygame.time.Clock() 
-c = game.Game.Cfg()
-g = game.Game(c)
-mc = gamemap.Map.Cfg()
-m = gamemap.Map(mc)
-gamemap.Test()
-print(g.GetCfg())
+# c = game.Game.Cfg()
+# g = game.Game(c)
+# mc = gamemap.Map.Cfg()
+# m = gamemap.Map(mc)
+# gamemap.Test()
+#print(g.GetCfg())
   
 while exit: 
     for event in pygame.event.get(): 
