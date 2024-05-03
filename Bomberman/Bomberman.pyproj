@@ -25,7 +25,9 @@
     <Compile Include="commands.py" />
     <Compile Include="game.py" />
     <Compile Include="gamemap.py" />
-    <Compile Include="player.py" />
+    <Compile Include="gameplayer.py" />
+    <Compile Include="keyboard.py" />
+    <Compile Include="main.py" />
     <Compile Include="sprites.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

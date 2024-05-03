@@ -1,2 +1,12 @@
+
+
+
 class Commands:
-    def Register
+    def __init__(self):
+        pass
+        
+    def AddCmd(cmd):
+        pass
+    
+
+    

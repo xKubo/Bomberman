@@ -1,5 +1,7 @@
 import gamemap
+import gameplayer
 import sprites
+import Keyboard
 
 def GenMapSprite(gmap, images):
     
@@ -22,13 +24,19 @@ def GenMapSprite(gmap, images):
 
 class Game:    
     class Cfg:
-        w = 320
-        h = 240
-        
-    def __init__(self, cfg, images) -> None:
+        players:{}
+        gamemap:{}
+    
+    def __init__(self, cfg:Cfg, images, keyboard) -> None:
         self.m_Cfg = cfg
         self.m_Map = gamemap.Map(cfg.map)
+        self.m_Players = [];
+        for p in cfg.players:
+            self.m_Players.append(self._CreatePlayer(p))
         self.m_MapSprite = GenMapSprite(self.m_Map, images)
+    
+    def _CreatePlayer(self, player) -> gameplayer.Player
+        #create controller and init player
         pass
     
     def GetMapSprite(self):
@@ -37,7 +45,9 @@ class Game:
     def GetCfg(self) -> Cfg:
         return self.m_Cfg
     
-    def Update():        
+    def Update(self):    
+        for p in self.m_Players:
+            p.Update()
         pass
     
 def ComputeCentralRect(DisplaySize, MapSpriteSize):
@@ -49,4 +59,6 @@ def ComputeCentralRect(DisplaySize, MapSpriteSize):
 def DrawGame(g, screen):
     MapSprite = g.GetMapSprite()
     screen.blit(MapSprite, ComputeCentralRect(screen.get_size(), MapSprite.rect))
+    
+
     

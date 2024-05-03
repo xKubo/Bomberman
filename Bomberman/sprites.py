@@ -12,14 +12,18 @@ class Animation(pygame.sprite.Sprite):
         self.sprites = sprites
     
 
-class Images:
+class Sprites:
     
     class Cfg:
         PicSize = 16, 
         fields = {
             'W': (3,3, 1), 
             'w': (3,3, 6),
-            'b': (3,3, 3),      
+            'b': (3,3, 3),   
+            'L': (0,0, 3),
+            'D': (0,3, 3),
+            'R': (1,0, 3),
+            'U': (1,3, 3),
         }
 
     def __init__(self, cfg, img):

@@ -1,15 +1,20 @@
 import sys
 import pygame
 import game
-import player
 import gamemap
+
+
 
 pygame.init()
 screen = pygame.display.set_mode((640, 480))
+IMAGE = pygame.image.load('player.png').convert_alpha()
 
-player.Init()
+class Player(pygame.sprite.Sprite):
 
-
+    def __init__(self, pos):
+        super().__init__()
+        self.image = IMAGE
+        self.rect = self.image.get_rect(center=pos)
 
 # GLOBAL VARIABLES 
 COLOR = (255, 100, 98) 
@@ -45,19 +50,13 @@ object_ = Sprite(RED, 20, 30)
 object_.rect.x = 200
 object_.rect.y = 300
 
-p = player.Player((50, 50))
+p = Player((50, 50))
   
 all_sprites_list.add(object_) 
 all_sprites_list.add(p) 
   
 exit = True
 clock = pygame.time.Clock() 
-# c = game.Game.Cfg()
-# g = game.Game(c)
-# mc = gamemap.Map.Cfg()
-# m = gamemap.Map(mc)
-# gamemap.Test()
-#print(g.GetCfg())
   
 while exit: 
     for event in pygame.event.get(): 
