@@ -5,12 +5,14 @@
     <ProjectGuid>feb9747a-977f-46ef-b3a9-5d60563360d5</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>Tests.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>..\Bomberman</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>Tests</Name>
     <RootNamespace>Tests</RootNamespace>
+    <TestFramework>none</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>.</UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

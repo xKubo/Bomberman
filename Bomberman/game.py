@@ -1,7 +1,8 @@
 import gamemap
 import gameplayer
 import sprites
-import Keyboard
+import keyboard
+import utils
 
 def GenMapSprite(gmap, images):
     
@@ -23,26 +24,25 @@ def GenMapSprite(gmap, images):
     return MapSprite
 
 class Game:    
-    class Cfg:
-        players:{}
-        gamemap:{}
     
-    def __init__(self, cfg:Cfg, images, keyboard) -> None:
+    def __init__(self, cfg, images, keyboard) -> None:
         self.m_Cfg = cfg
-        self.m_Map = gamemap.Map(cfg.map)
+        self.m_Map = gamemap.Map(cfg["map"])
         self.m_Players = [];
-        for p in cfg.players:
+        for p in cfg["players"]:
             self.m_Players.append(self._CreatePlayer(p))
         self.m_MapSprite = GenMapSprite(self.m_Map, images)
     
-    def _CreatePlayer(self, player) -> gameplayer.Player
-        #create controller and init player
-        pass
+    def _CreatePlayer(self, playerCfg) -> gameplayer.Player:
+        if playerCfg.type != 'key':
+            raise utils.Error("Invalid player type: " + playerCfg.type)
+        c = keyboard.KeyboardController()
+        
     
     def GetMapSprite(self):
         return self.m_MapSprite
     
-    def GetCfg(self) -> Cfg:
+    def GetCfg(self):
         return self.m_Cfg
     
     def Update(self):    
