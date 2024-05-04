@@ -1,26 +1,29 @@
 
 
 class Map:
-    class Cfg:
-        w = 0
-        h = 0
-        data = ""
-        player_positions = [(20, 20), (10, 10)] 
+    def __init__(self, cfg):
+        d = cfg["data"]
+        self.m_Height = len(d)
+        self.m_Width = len(d[0])
+        self.m_Positions = cfg["players"]
+        self.m_Data = []
+        for line in d:
+            self.m_Data += line
 
+    def width(self):
+        return self.m_Width
 
-    def __init__(self, cfg:Cfg):
-        self._cfg = cfg
-        self._GenImg()
-        
-    def GetCfg(self):
-        return self._cfg
+    def height(self):
+        return self.m_Height
 
-
+    def data(self):
+        return self.m_Data
 
     def dims(self):
-        return (self.cfg.w, self.cfg.h)
+        return (self.m_Width, self.m_Height)
     
-    def GetImage(self):
-        pass
+    def positions(self):
+        return self.m_Positions
+    
     
 

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>5d91f3f9-25bf-408f-b57d-72633dfa3c93</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Bomberman.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

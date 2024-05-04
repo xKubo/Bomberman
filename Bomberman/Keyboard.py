@@ -19,7 +19,7 @@ class Keyboard:
     
 
 class KeyboardController:
-    def __init__(self, player, keyboard):
+    def __init__(self, obj, keyboard):
         self.m_Keyboard = keyboard
         
     

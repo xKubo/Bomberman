@@ -50,12 +50,13 @@ appcfg = {
         "map" : {
             "data" : [
             "WWWWWW",
-            "W1 w W",
+            "W  w W",
             "W  w W",
             "WwwwwW",
-            "W   2W",
+            "W    W",
             "WWWWWW",
-            ]
+            ],
+            "players" : [(1,1),(4,4)]
 
                
         }
