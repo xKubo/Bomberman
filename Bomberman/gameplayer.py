@@ -7,13 +7,11 @@ class Position:
     pass
 
 DirsToVec = {
-    'l' : (-1, 0),
-    'r' : (1, 0),
-    'u' : (0, -1),
-    'd' : (0, 1),    
+    'L' : (-1, 0),
+    'R' : (1, 0),
+    'U' : (0, -1),
+    'D' : (0, 1),    
     }
-
-Dirs = "LURD"
 
 def DirToPos(dir, step):
     (x, y) = DirsToVec[dir]
@@ -27,7 +25,7 @@ class Player:
         self.m_Cfg = cfg
         self.m_Position = self.m_Cfg["position"]
         self.m_Game = game
-        for d in Dirs:
+        for d in DirsToVec.keys():
             self.m_Sprites[d] = self.m_Game.GetAnimation(d)
         
     def GetDirection(self):
@@ -45,7 +43,7 @@ class Player:
             self.m_Position += DirToPos(dir, self.m_Cfg.step)
            
     def OnCmd(self, cmd):
-        if cmd in Dirs:
+        if cmd in DirsToVec.keys:
             self.MoveTo(self, dir)
         else:
             raise utils.Error("Invalid cmd: " + cmd)            

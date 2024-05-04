@@ -13,9 +13,7 @@ class App:
         self.m_Keyboard = keyboard.Keyboard()
         self.m_Clock = pygame.time.Clock()         
         self.m_Screen = pygame.display.set_mode((640, 480))  
-        MainImg = pygame.image.load('Bomberman.png').convert_alpha()
-        imgscfg = sprites.Sprites.Cfg();
-        self.m_Images = sprites.Sprites(imgscfg, MainImg)
+        self.m_Images = sprites.Sprites(self.m_Cfg["images"])
         self.m_Game = game.Game(self.m_Cfg['game'], self.m_Images, self.m_Keyboard)
         
 
@@ -33,7 +31,19 @@ class App:
         pygame.quit() 
     
 appcfg = {
-    "img" : "Bomberman.png",
+    "images" : {
+        "name" :  "Bomberman.png",
+        "fieldsize" : 16,
+        "fields" : {
+            'W': (3,3, 1), 
+            'w': (3,3, 6),
+            'b': (3,3, 3),   
+            'L': (0,0, 3),
+            'D': (0,3, 3),
+            'R': (1,0, 3),
+            'U': (1,3, 3),
+        },
+    },
     "game" : {
         "players" : [
             {

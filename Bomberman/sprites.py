@@ -19,26 +19,12 @@ class Animation:
     
 
 class Sprites:
-    
-    class Cfg:
-        PicSize = 16, 
-        fields = {
-            'W': (3,3, 1), 
-            'w': (3,3, 6),
-            'b': (3,3, 3),   
-            'L': (0,0, 3),
-            'D': (0,3, 3),
-            'R': (1,0, 3),
-            'U': (1,3, 3),
-        }
-
-    def __init__(self, cfg, img):
-        self.m_Cfg = cfg
-        self.m_Image = img
-        self.m_PicSize = self.m_Cfg["PicSize"]
+    def __init__(self, cfg):
+        self.m_Cfg = cfg                
+        self.m_Image = pygame.image.load(self.m_Cfg["name"]).convert_alpha()
+        self.m_PicSize = self.m_Cfg["fieldsize"]
         self.m_Fields = {}
-        for k in self.m_Cfg.fields:
-            v = self.m_Cfg.fields[k]
+        for k, v in self.m_Cfg["fields"].items():
             self.m_Fields[k] = self._GenSprites(v)
         
     def GetStaticSprite(self, field):
@@ -51,8 +37,9 @@ class Sprites:
         sprites = []
         for i in range(field[2]):
             sprites.append(StaticSprite(self._RectFromField(field, i), self.m_Image))
+        return sprites
 
     def GetAnimation(self,fieldname):
-        return self.m_Fields(fieldname)
+        return self.m_Fields[fieldname]
         
 
