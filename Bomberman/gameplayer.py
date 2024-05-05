@@ -25,6 +25,7 @@ class Player:
         self.m_Cfg = cfg
         self.m_Position = self.m_Cfg["position"]
         self.m_Game = game
+        self.m_CurrentKeys = ""
         for d in DirsToVec.keys():
             self.m_Sprites[d] = self.m_Game.GetAnimation(d)
         
@@ -34,22 +35,20 @@ class Player:
     def GetPosition(self):
         return self.m_Position
 
-    def CanGo(dir):
+    def CanGo(self, dir):
         return True # zatial nekontrolujem
 
     def MoveTo(self, dir):
-        self.m_Game.AddCmd("P" + self.m_Cfg.name + ":" + dir)
+        self.m_Game.AddCmd("P" + self.m_Cfg["name"] + ":" + dir)
         if self.CanGo(dir):
-            self.m_Position += DirToPos(dir, self.m_Cfg.step)
+            self.m_Position += DirToPos(dir, self.m_Cfg["step"])
            
     def OnCmd(self, cmd):
-        if cmd in DirsToVec.keys:
-            self.MoveTo(self, dir)
-        else:
-            raise utils.Error("Invalid cmd: " + cmd)            
+        self.m_CurrentKeys = cmd
 
     def Update(self):
-        self.m_Controller.Update()
+        if self.m_CurrentKeys != "":
+            self.MoveTo(self.m_CurrentKeys)
 
     def GetSprite(self):
         return self.m_Sprites[self.m_Direction].GetNext()
