@@ -82,18 +82,30 @@ class Game:
         y = origin[1] + pos[1]*fieldsize//100
         return (x, y)    
    
+bomb = None
+
 def DrawGame(g, screen):
     MapSprite = g.GetMapSprite()
-
     screen.blit(MapSprite.image, MapSprite.position)
     
+
     #for p in g.GetPlayers():
     
     p = g.GetPlayers()[0]
     fs = g.m_Images.GetFieldSize()
     pos = g.ToPixelPos(p.GetPosition())
     pos2 = (pos[0] + fs, pos[1] + fs)
+    pos3 = (pos2[0] + fs, pos2[1] + fs)
+    
     playersprite = p.GetSprite()
     screen.blit(playersprite.image, pos2, playersprite.rect)     
     
+
+    global bomb
+    if bomb == None:
+        bomb = g.m_Images.GetAnimation('b')
+        
+    bs = bomb.GetNext()
+    screen.blit(bs.image, pos3, bs.rect)
+
 
