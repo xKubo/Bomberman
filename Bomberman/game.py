@@ -84,9 +84,16 @@ class Game:
    
 def DrawGame(g, screen):
     MapSprite = g.GetMapSprite()
+
     screen.blit(MapSprite.image, MapSprite.position)
-    for p in g.GetPlayers():
-        playersprite = p.GetSprite()
-        screen.blit(playersprite.image, g.ToPixelPos(p.GetPosition()))     
+    
+    #for p in g.GetPlayers():
+    
+    p = g.GetPlayers()[0]
+    fs = g.m_Images.GetFieldSize()
+    pos = g.ToPixelPos(p.GetPosition())
+    pos2 = (pos[0] + fs, pos[1] + fs)
+    playersprite = p.GetSprite()
+    screen.blit(playersprite.image, pos2, playersprite.rect)     
     
 

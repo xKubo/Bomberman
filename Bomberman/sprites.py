@@ -22,6 +22,7 @@ class Sprites:
     def __init__(self, cfg):
         self.m_Cfg = cfg                
         self.m_Image = pygame.image.load(self.m_Cfg["name"]).convert_alpha()
+        self.m_Image.set_colorkey(self.m_Cfg["transparent_color"]) 
         self.m_FieldSize = self.m_Cfg["fieldsize"]
         self.m_Fields = {}
         for k, v in self.m_Cfg["fields"].items():

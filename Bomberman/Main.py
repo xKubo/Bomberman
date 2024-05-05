@@ -20,6 +20,7 @@ class App:
         
 
     def Run(self):  
+        tick = self.m_Cfg["tick"]
         while not self.exit: 
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
@@ -28,16 +29,17 @@ class App:
             self.m_Screen.fill('black')
             self.m_Game.Update()
             game.DrawGame(self.m_Game, self.m_Screen)
-
             pygame.display.flip() 
-            self.m_Clock.tick(self.m_Cfg["tick"]) 
+            
+            self.m_Clock.tick(tick) 
         
     
 appcfg = {
-    "tick" : 60,
+    "tick" : 500,
     "images" : {
         "name" :  "Bomberman.png",
         "fieldsize" : 16,
+        "transparent_color" : (56, 135, 0),
         "fields" : {
             'W': (3,3, 1), 
             'w': (3,3, 6),
@@ -46,7 +48,7 @@ appcfg = {
             'D': (0,3, 3),
             'R': (1,0, 3),
             'U': (1,3, 3),
-            ' ': (4,0, 1),
+            ' ': (7,1, 1),
         },
     },
     "game" : {
