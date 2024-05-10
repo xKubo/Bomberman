@@ -1,10 +1,10 @@
 from dataclasses import field
 import gamemap
-import gameplayer
+from gameplayer import Player
 import sprites
-import keyboard
+from keyboard import KeyboardController
 import utils
-import commands
+from commands import Commands
 import pygame
 
 def ComputeMapSpritePosition(DisplaySize, MapSpriteSize):
@@ -34,25 +34,25 @@ def GenMapSprite(gmap, images):
 
 class Game:    
     
-    def __init__(self, cfg, images, keys) -> None:
+    def __init__(self, cfg, images, keys):
         self.m_Cfg = cfg
         self.m_Images = images
         self.m_Map = gamemap.Map(cfg["map"])
         self.m_Players = [];
-        self.m_Commands = commands.Commands()
+        self.m_Commands = Commands()
         self.m_Keyboard = keys
         for i,p in enumerate(cfg["players"]):
             self.m_Players.append(self._CreatePlayer(i, p))
         self.m_MapSprite = GenMapSprite(self.m_Map, images)
         self.m_MapSprite.position = ComputeMapSpritePosition(self.m_Cfg["display_size"], self.m_MapSprite.rect.size)
     
-    def _CreatePlayer(self, index, cfg) -> gameplayer.Player:
+    def _CreatePlayer(self, index, cfg) -> Player:
         t = cfg["type"]
         if t != 'key':
             raise utils.Error("Invalid player type: " + t)
         cfg["position"] = self.m_Map.positions()[index]
-        p = gameplayer.Player(cfg, self)
-        c = keyboard.KeyboardController(cfg["keys"], p, self.m_Keyboard)
+        p = Player(cfg, self)
+        c = KeyboardController(cfg["keys"], p, self.m_Keyboard)
         p.m_Controller = c
         return p
 
@@ -71,16 +71,15 @@ class Game:
     def GetAnimation(self, anim):
         return self.m_Images.GetAnimation(anim)
     
-    def Update(self):    
+    def Update(self):  
+        self.m_Keyboard.Update()
         for p in self.m_Players:
             p.Update()
 
     def ToPixelPos(self, pos):        
         origin = self.m_MapSprite.position
         fieldsize = self.m_Images.GetFieldSize()
-        x = origin[0] + pos[0]*fieldsize//100
-        y = origin[1] + pos[1]*fieldsize//100
-        return (x, y)    
+        return origin + pos*fieldsize//100   
    
 bomb = None
 

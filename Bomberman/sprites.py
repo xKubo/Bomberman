@@ -12,10 +12,16 @@ class Animation:
         self.sprites = sprites
         self.m_Phase = 0
         
-    def GetNext(self):
-        s = self.sprites[self.m_Phase]
+    def NextPhase(self):
         self.m_Phase = (self.m_Phase + 1) % len(self.sprites)
+
+    def GetCurrent(self):
+        s = self.sprites[self.m_Phase]        
         return s
+
+    def GetNext(self):
+        self.NextPhase()
+        return self.GetCurrent( )        
     
 
 class Sprites:

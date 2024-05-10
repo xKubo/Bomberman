@@ -35,7 +35,7 @@ class App:
         
     
 appcfg = {
-    "fps" : 5,
+    "fps" : 10,
     "images" : {
         "name" :  "Bomberman.png",
         "fieldsize" : 16,
@@ -56,12 +56,12 @@ appcfg = {
             {
                 "name" : "P1",
                 "type" : "key",
-                "keys" : "wasd"
+                "keys" : ['w', 'a', 's', 'd', '1']
             },
             {
                 "name" : "P2",
                 "type" : "key",
-                "keys" : "8456"
+                "keys" : ['up', 'left', 'down', 'right', 'p']
             },
         ],
         "map" : {
