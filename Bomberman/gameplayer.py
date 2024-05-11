@@ -1,6 +1,6 @@
 import utils
 import sprites
-from Vec2d import Vector2D, Point2D
+from Vec2d import Vector2D
 
 DirToVec = {
     'L' : Vector2D(-1, 0),
@@ -36,7 +36,8 @@ class Player:
         self.m_Direction = 'R'
         self.m_Sprites = {}
         self.m_Cfg = cfg
-        self.m_Position = Point2D(self.m_Cfg["position"])
+        p = self.m_Cfg["position"]
+        self.m_Position = Vector2D.from_tuple(p)
         self.m_Step = self.m_Cfg["step"]
         self.m_Game = game
         self.m_CurrentKeys = ""
@@ -61,7 +62,7 @@ class Player:
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
             self.m_CurrentKeys = cmd
-            print(cmd)
+            print(f'{cmd}:{self.m_Position}')
             self.m_Direction = ComputeNewDir(self.m_Direction, cmd, self.CanGo)
             
 

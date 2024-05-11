@@ -7,6 +7,13 @@ class Vector2D:
 
     def __str__(self):
         return self.__repr__()
+    
+    @classmethod
+    def from_tuple(cls, t):
+        return Vector2D(t[0], t[1])
+
+    def to_tuple(self):
+        return (self.x, self.y)
 
     def __repr__(self):
         return f'({self.x},{self.y})'
@@ -65,20 +72,5 @@ class Vector2D:
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), math.atan2(self.y, self.x)
 
-class Point2D:
-    def __init__(self,x_init,y_init):
-        self.x = x_init
-        self.y = y_init
-
-    def shift(self, x, y):
-        self.x += x
-        self.y += y
-        
-    def __add__(self, vec):
-        return Point2D(self.x + vec.x, self.y + vec.y)
-    
-    def __sub__(self, vec):
-        return Point2D(self.x - vec.x, self.y - vec.y)
-
-    def __repr__(self):
-        return f'[{self.x},{self.y}]'
+def AsVec2D(t):
+    return Vector2D.from_tuple(t)

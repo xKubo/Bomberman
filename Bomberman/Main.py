@@ -52,6 +52,7 @@ appcfg = {
         },
     },
     "game" : {
+        "step" : 25,
         "players" : [
             {
                 "name" : "P1",
