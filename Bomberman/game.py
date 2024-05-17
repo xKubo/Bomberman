@@ -6,7 +6,7 @@ from gameplayer import Player
 from keyboard import KeyboardController
 from commands import Commands
 from sprites import StaticSprite, Animation, Sprites
-from Vec2d import Vector2D, AsVec2D
+from Vec2d import Vector2D
 
 def ComputeMapSpritePosition(DisplaySize, MapSpriteSize):
     return (DisplaySize - MapSpriteSize) // 2
@@ -44,8 +44,8 @@ class Game:
             self.m_Players.append(self._CreatePlayer(i, p))
         self.m_MapSprite = GenMapSprite(self.m_Map, images)
         self.m_MapSprite.position = ComputeMapSpritePosition(
-            AsVec2D(self.m_Cfg["display_size"]), 
-            AsVec2D(self.m_MapSprite.rect.size))
+            Vector2D(*self.m_Cfg["display_size"]), 
+            Vector2D(*self.m_MapSprite.rect.size))
     
     def _CreatePlayer(self, index, cfg) -> Player:
         t = cfg["type"]
@@ -80,34 +80,18 @@ class Game:
 
     def ToPixelPos(self, pos):        
         origin = self.m_MapSprite.position
-        fieldsize = self.m_Images.GetFieldSize()
-        return origin + pos*fieldsize//100   
+        f = self.m_Images.GetFieldSize()
+        return origin + pos*f//100   
    
-bomb = None
-
 def DrawGame(g, screen):
     MapSprite = g.GetMapSprite()
     screen.blit(MapSprite.image,  MapSprite.position.to_tuple())
     
 
-    #for p in g.GetPlayers():
-    
-    p = g.GetPlayers()[0]
-    fs = g.m_Images.GetFieldSize()
-    fsvec = AsVec2D((fs, fs))
-    pos = g.ToPixelPos(p.GetPosition())
-    pos2 = pos + fsvec
-    pos3 = pos2 + fsvec
-    
-    playersprite = p.GetSprite()
-    screen.blit(playersprite.image, pos2.to_tuple(), playersprite.rect)     
-    
+    for p in g.GetPlayers():
+        pos = g.ToPixelPos(p.GetPosition())
+        playersprite = p.GetSprite()
+        screen.blit(playersprite.image, pos.to_tuple(), playersprite.rect)     
 
-    global bomb
-    if bomb == None:
-        bomb = g.m_Images.GetAnimation('b')
-        
-    bs = bomb.GetNext()
-    screen.blit(bs.image, pos3.to_tuple(), bs.rect)
-
+    
 

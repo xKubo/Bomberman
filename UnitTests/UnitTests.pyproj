@@ -2,15 +2,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>5d91f3f9-25bf-408f-b57d-72633dfa3c93</ProjectGuid>
+    <ProjectGuid>f74642c5-8427-45ea-8976-f66c54955fc6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>testMap.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>Bomberman</Name>
-    <RootNamespace>Bomberman</RootNamespace>
+    <Name>UnitTests</Name>
+    <RootNamespace>UnitTests</RootNamespace>
+    <TestFramework>unittest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>.</UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,17 +24,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Bomberman.py" />
-    <Compile Include="commands.py" />
-    <Compile Include="game.py" />
-    <Compile Include="gamemap.py" />
-    <Compile Include="gameplayer.py" />
-    <Compile Include="keyboard.py" />
-    <Compile Include="main.py" />
-    <Compile Include="sprites.py" />
-    <Compile Include="timequeue.py" />
-    <Compile Include="utils.py" />
-    <Compile Include="Vec2d.py" />
+    <Compile Include="test1.py" />
+    <Compile Include="testMap.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bomberman\Bomberman.pyproj">
+      <Name>Bomberman</Name>
+      <Project>{5d91f3f9-25bf-408f-b57d-72633dfa3c93}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -15,11 +15,11 @@ Dirs = 'LURD'
 
 def OppositeDirs(Dir):
     index = Dirs.index(Dir)
-    return (Dirs[(index+1)%4], Dirs[(index-1)%4])
+    return (Dirs[(index+1)%4], Dirs[(index+3)%4])
 
 def ComputeNewDir(LastDir, NewChars, CanGo):
     if NewChars=='':
-        return EmptyDir
+        return LastDir
     CurrDir = NewChars[0]
     if LastDir == EmptyDir:
         return CurrDir
@@ -37,8 +37,8 @@ class Player:
         self.m_Sprites = {}
         self.m_Cfg = cfg
         p = self.m_Cfg["position"]
-        self.m_Position = Vector2D.from_tuple(p)
-        self.m_Step = self.m_Cfg["step"]
+        self.m_Position = Vector2D(*p) * 100
+        self.m_Step = int(self.m_Cfg["step"] * 100)
         self.m_Game = game
         self.m_CurrentKeys = ""
         for d in DirToVec.keys():
@@ -62,13 +62,12 @@ class Player:
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
             self.m_CurrentKeys = cmd
-            print(f'{cmd}:{self.m_Position}')
-            self.m_Direction = ComputeNewDir(self.m_Direction, cmd, self.CanGo)
-            
+            print(f'{cmd}:{self.m_Position}')            
+            self.m_Direction = ComputeNewDir(self.m_Direction, cmd, self.CanGo)            
 
     def Update(self):
         if self.m_CurrentKeys != "":
-            self.MoveTo(self.m_CurrentKeys)
+            self.MoveTo(self.m_Direction)
 
     def GetSprite(self):
         return self.m_Sprites[self.m_Direction].GetCurrent()

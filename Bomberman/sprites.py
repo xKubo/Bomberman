@@ -35,7 +35,7 @@ class Sprites:
             self.m_Fields[k] = self._GenSprites(v)
         
     def GetStaticSprite(self, field):
-        return self.m_Fields[field].sprites[0]
+        return self.m_Fields[field][0]
     
     def _RectFromField(self, field, index):
         return pygame.Rect((field[0] + index)*self.m_FieldSize, field[1]*self.m_FieldSize, self.m_FieldSize, self.m_FieldSize)
@@ -44,12 +44,15 @@ class Sprites:
         sprites = []
         for i in range(field[2]):
             sprites.append(StaticSprite(self._RectFromField(field, i), self.m_Image))
-        return Animation(sprites)
+        return sprites
 
     def GetAnimation(self,fieldname):
-        return self.m_Fields[fieldname]
+        return Animation(self.m_Fields[fieldname])
     
     def GetFieldSize(self):
         return self.m_FieldSize
+    
+    def GetFieldSizeVec(self):
+        return AsVec2D((self.m_FieldSize, self.m_FieldSize))
         
 

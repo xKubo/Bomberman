@@ -35,7 +35,7 @@ class App:
         
     
 appcfg = {
-    "fps" : 10,
+    "fps" : 20,
     "images" : {
         "name" :  "Bomberman.png",
         "fieldsize" : 16,
@@ -52,7 +52,7 @@ appcfg = {
         },
     },
     "game" : {
-        "step" : 25,
+        "step" : 0.25,
         "players" : [
             {
                 "name" : "P1",
