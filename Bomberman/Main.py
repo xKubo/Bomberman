@@ -2,6 +2,14 @@ import pygame
 import keyboard 
 import game
 import sprites
+from Vec2d import Vector2D
+
+class Screen:
+    def __init__(self, scr:pygame.Surface):
+        self.m_Screen = scr
+        
+    def DrawSprite(self, sprite, pos):
+        self.m_Screen.blit(sprite.image, pos.to_tuple(), sprite.rect)  
 
 class App:
    
@@ -14,7 +22,7 @@ class App:
         pygame.init()
         self.m_Keyboard = keyboard.Keyboard()
         self.m_Clock = pygame.time.Clock()         
-        self.m_Screen = pygame.display.set_mode(displaysize)  
+        self.m_Screen = Screen(pygame.display.set_mode(displaysize))
         self.m_Images = sprites.Sprites(self.m_Cfg["images"])
         self.m_Game = game.Game(self.m_Cfg['game'], self.m_Images, self.m_Keyboard)
         
@@ -26,7 +34,7 @@ class App:
                 if event.type == pygame.QUIT:
                     pygame.quit() 
                     return         
-            self.m_Screen.fill('black')
+            self.m_Screen.m_Screen.fill('black')
             self.m_Game.Update()
             game.DrawGame(self.m_Game, self.m_Screen)
             pygame.display.flip() 

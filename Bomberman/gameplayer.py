@@ -2,13 +2,7 @@ import utils
 import sprites
 from Vec2d import Vector2D
 
-DirToVec = {
-    'L' : Vector2D(-1, 0),
-    'U' : Vector2D(0, -1),
-    'R' : Vector2D(1, 0),
-    'D' : Vector2D(0, 1),    
-    }
-
+from gamemap import DirToVec
 
 EmptyDir = ' '
 Dirs = 'LURD'

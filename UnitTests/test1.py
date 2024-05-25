@@ -22,5 +22,6 @@ class TestStringMethods(unittest.TestCase):
         self.assertFalse('Foo'.isupper())
 
 
+
 if __name__ == '__main__':
     unittest.main()

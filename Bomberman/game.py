@@ -85,13 +85,13 @@ class Game:
    
 def DrawGame(g, screen):
     MapSprite = g.GetMapSprite()
-    screen.blit(MapSprite.image,  MapSprite.position.to_tuple())
+    screen.DrawSprite(MapSprite, MapSprite.position)
     
 
     for p in g.GetPlayers():
         pos = g.ToPixelPos(p.GetPosition())
         playersprite = p.GetSprite()
-        screen.blit(playersprite.image, pos.to_tuple(), playersprite.rect)     
+        screen.DrawSprite(playersprite, pos)     
 
     
 

@@ -15,3 +15,6 @@ class TimeQueue:
         older = self.timequeue[:i]
         self.timequeue = self.timequeue[i:]      
         return older
+
+    def RemoveTimeObject(self, at, num):
+        pass
