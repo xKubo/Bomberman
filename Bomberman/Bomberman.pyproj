@@ -21,6 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="arena.py" />
     <Compile Include="Bomberman.py" />
     <Compile Include="commands.py" />
     <Compile Include="game.py" />

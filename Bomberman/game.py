@@ -33,7 +33,7 @@ def GenMapSprite(gmap, images):
 
 class Game:    
     
-    def __init__(self, cfg, images, keys):
+    def __init__(self, cfg, images:Sprites, keys):
         self.m_Cfg = cfg
         self.m_Images = images
         self.m_Map = Map(cfg["map"])
@@ -84,6 +84,7 @@ class Game:
         return origin + pos*f//100   
    
 def DrawGame(g, screen):
+    screen.ToPixelPos = g.ToPixelPos
     MapSprite = g.GetMapSprite()
     screen.DrawSprite(MapSprite, MapSprite.position)
     

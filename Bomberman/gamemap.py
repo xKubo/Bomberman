@@ -1,7 +1,5 @@
 
-from enum import Enum
 from Vec2d import Vector2D
-from sprites import Animation
 
 DirToVec = {
     'L' : Vector2D(-1, 0),
@@ -10,62 +8,6 @@ DirToVec = {
     'D' : Vector2D(0, 1),    
     }
 
-class BombStatus(Enum):
-    Ticking = 0,
-    Exploding = 1,
-    Exploded = 2,
-
-class BombCfg:
-    pos = Vector2D(0,0),
-    bombTime = 5,
-    flameSize = 5,
-    flameTime = 5,
-
-class Bomb:
-    def __init__(self, bombs, cfg:BombCfg):
-        self.m_Position = cfg.pos
-        self.m_Timeout = cfg.bombTime
-        self.m_ID = id
-        self.m_Bombs = bombs
-        self.m_Status = BombStatus.Ticking
-        self.m_WaitTime = self.m_BombTime
-        self.m_Animation = Animation(bombs.GetBombSprites());
-
-    def ID(self):
-        return self.m_ID
-
-    def Explode(self) :
-        self.m_WaitTime = 0
-        self.m_Status =0.
-        points = self.m_Bombs.FindFirePoints(self)
-
-    def OnFire(self):
-        self.Explode()
-
-    def Update(self):
-        if self.m_WaitTime>0:
-            self.m_WaitTime =- 1
-            self.m_Animation.NextPhase()        
-            return True
-        if self.m_Status == BombStatus.Ticking:
-            self.Explode()
-            return True
-        if self.m_Status == BombStatus.Exploding:            
-            self.m_Status = BombStatus.Exploded
-            return False  # can be destroyed
-
-    def Draw(self, scr):
-        if self.m_Status == BombStatus.Exploded:
-            return;
-        if self.m_Status == BombStatus.Ticking:
-            scr.DrawSprite(self.m_Animation.GetCurrent(), ToPixelPos(self.m_Position));
-    
-
-
-
-def PositionToField(pos):
-    return Vec2D((pos.x+50)//100, (pos.y+50)//100)
-                 
 class Map:
     def __init__(self, cfg):
         d = cfg["data"]
@@ -104,46 +46,33 @@ class Map:
     
     def positions(self):
         return self.m_Positions
+
+
+
+
+#pick one field from 4 possible ones           
+def BestField(posUpperLeft:Vector2D):
+    return Vector2D((posUpperLeft.x+50)//100, (posUpperLeft.y+50)//100)
     
-class Bombs:
+Table = [
+    [(0,0)],
+    [(0,0), (0,1)],
+    [(0,0), (1,0)],
+    [(0,0), (1,0), (0,1), (1,1)],
+]
 
-    def HandleFirePoint(self, pos):
-        pt = self.FireObjects(pos)
-        if pt == ' ':
-            return True;
-        if pt == 'W':
-            return False;
-        if pt == 'w':
-            self.SetPt(pos, ' ')
-        pass
+def sign(x):
+    return 1 if x>=0 else -1
 
-    def FindFirePoints(self, bomb):
-        for dv in DirToVec.values():          
-            self.m_Map.ForEachPointInDirDo(bomb.Position(), dv, self.HandleFirePoint)
-
-    BombCounter = 0
-    def __init__(self, map:Map, timequeue):
-        self.m_Bombs = {}
-        self.m_FireCrosses = {}
-        self.m_Map = map
-
-    def AddBomb(self, cfg) -> Bomb:        
-        Bombs.BombCounter += 1
-        BombNum = Bombs.BombCounter
-
-        b = Bomb(self, cfg, BombNum)
-        self.m_Bombs[BombNum] = b
-        return b
-
-    def RemoveBomb(self, num):
-        self.m_Bombs.erase(num)
-
-    def Update(self):
-        # update bombs, and destroy bomb if Update return False
-        self.m_Bombs = {id:b for id,b in self.m_Bombs.iteritems() if b.Update() == False}
-
-    def Draw(self):
-        for b in self.m_Bombs.values():
-            b.Draw();
+# return neighboring fields
+def NeighboringFields(posUpperLeft:Vector2D, tolerance:int):
+    pos = Vector2D(posUpperLeft.x + 50, posUpperLeft.y + 50)  # position of the center 
+    f = BestField(posUpperLeft)
+    xOff = pos.x%100 - 50   # distance from center point
+    yOff = pos.y%100 - 50
+    xAbs = abs(xOff) > tolerance  # is within tolerance? 
+    yAbs = abs(yOff) > tolerance  
+    Points = Table[xAbs + 2*yAbs]    # return 1, 2, or 4 points
+    return list(map(lambda p: f + Vector2D(p[0]*sign(xOff), p[1]*sign(yOff)), Points))    # adjust for all quadrants
     
 

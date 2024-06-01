@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f74642c5-8427-45ea-8976-f66c54955fc6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testMap.py</StartupFile>
+    <StartupFile>testNeighboringFields.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,8 +24,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="test1.py" />
+    <Compile Include="testSimpleTests.py" />
+    <Compile Include="testComputeDir.py" />
     <Compile Include="testMap.py" />
+    <Compile Include="testNeighboringFields.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bomberman\Bomberman.pyproj">

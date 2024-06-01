@@ -29,5 +29,5 @@ class TestTimeObject(unittest.TestCase):
         items = q.GetOlderOrEqual(2)
         self.assertEqual(items, [(2,None)])
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     unittest.main()
