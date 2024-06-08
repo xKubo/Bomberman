@@ -29,6 +29,7 @@
     <Compile Include="gameplayer.py" />
     <Compile Include="keyboard.py" />
     <Compile Include="main.py" />
+    <Compile Include="screen.py" />
     <Compile Include="sprites.py" />
     <Compile Include="timequeue.py" />
     <Compile Include="utils.py" />

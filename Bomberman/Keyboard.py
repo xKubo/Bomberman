@@ -30,7 +30,7 @@ class Keyboard:
     
 
 class KeyboardController:
-    def __init__(self, keys, obj, keyboard):
+    def __init__(self, keyboard, obj, keys):
         keyboard.RegisterKeyHandler(keys, obj)
                
 

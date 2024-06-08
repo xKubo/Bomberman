@@ -8,6 +8,8 @@ from commands import Commands
 from sprites import StaticSprite, Animation, Sprites
 from Vec2d import Vector2D
 
+from arena import Arena
+
 def ComputeMapSpritePosition(DisplaySize, MapSpriteSize):
     return (DisplaySize - MapSpriteSize) // 2
 
@@ -33,28 +35,30 @@ def GenMapSprite(gmap, images):
 
 class Game:    
     
-    def __init__(self, cfg, images:Sprites, keys):
+    def __init__(self, cfg, images:Sprites, createcontroller, screen):
+        self.m_Screen = screen
+        self.m_Screen.ToPixelPos = self.ToPixelPos
         self.m_Cfg = cfg
-        self.m_Images = images
+        self.m_Images = images        
         self.m_Map = Map(cfg["map"])
+        self.m_Arena = Arena(self.m_Map)
         self.m_Players = [];
         self.m_Commands = Commands()
-        self.m_Keyboard = keys
+        self.m_CreateController = createcontroller
         for i,p in enumerate(cfg["players"]):
             self.m_Players.append(self._CreatePlayer(i, p))
         self.m_MapSprite = GenMapSprite(self.m_Map, images)
         self.m_MapSprite.position = ComputeMapSpritePosition(
             Vector2D(*self.m_Cfg["display_size"]), 
             Vector2D(*self.m_MapSprite.rect.size))
+
     
     def _CreatePlayer(self, index, cfg) -> Player:
-        t = cfg["type"]
-        if t != 'key':
-            raise utils.Error("Invalid player type: " + t)
+
         cfg["position"] = self.m_Map.positions()[index]
         cfg["step"] = self.m_Cfg["step"]
         p = Player(cfg, self)
-        c = KeyboardController(cfg["keys"], p, self.m_Keyboard)
+        c = self.m_CreateController(cfg, p)
         p.m_Controller = c
         return p
 
@@ -74,25 +78,27 @@ class Game:
         return self.m_Images.GetAnimation(anim)
     
     def Update(self):  
-        self.m_Keyboard.Update()
         for p in self.m_Players:
-            p.Update()
+            p.Update()           
+    
+    def Arena(self):
+        return self.m_Arena
 
     def ToPixelPos(self, pos):        
         origin = self.m_MapSprite.position
         f = self.m_Images.GetFieldSize()
         return origin + pos*f//100   
    
-def DrawGame(g, screen):
-    screen.ToPixelPos = g.ToPixelPos
-    MapSprite = g.GetMapSprite()
-    screen.DrawSprite(MapSprite, MapSprite.position)
+    def Draw(self):
+        
+        scr = self.m_Screen
+        MapSprite = self.GetMapSprite()
+        self.m_Screen.DrawSprite(MapSprite, MapSprite.position)
     
+        self.m_Arena.Draw(scr)
 
-    for p in g.GetPlayers():
-        pos = g.ToPixelPos(p.GetPosition())
-        playersprite = p.GetSprite()
-        screen.DrawSprite(playersprite, pos)     
+        for p in self.GetPlayers():
+            p.Draw(scr)
 
     
 

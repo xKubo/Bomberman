@@ -1,4 +1,10 @@
+from dataclasses import Field
 import pygame
+from Vec2d import Vector2D
+from utils import DirToVec
+
+def RectFromField(field, index, fieldsize):
+    return pygame.Rect((field[0] + index)*fieldsize, field[1]*fieldsize, fieldsize, fieldsize)           
 
 class StaticSprite(pygame.sprite.Sprite):
     def __init__(self, rect, image):
@@ -19,9 +25,46 @@ class Animation:
         s = self.sprites[self.m_Phase]        
         return s
 
+    def size(self):
+        return len(self.sprites)
+
     def GetNext(self):
         self.NextPhase()
-        return self.GetCurrent( )        
+        return self.GetCurrent()   
+    
+class FireCross:
+    def __init__(self, cfg, image, fieldsize):
+        self.m_Image = image
+        self.m_Cfg = cfg;
+        self.m_FieldSize = fieldsize
+        
+        self.m_CenterAnimation = self._AnimFromOffset(Vector2D(0,0))
+        self.m_MidAnimation = {}
+        self.m_EndAnimation = {}
+
+        
+        for d, v in DirToVec.items():
+            self.m_MidAnimation[d] = self._AnimFromOffset(v);
+            self.m_EndAnimation[d] = self._AnimFromOffset(2*v)
+        
+    
+    def GetCentralAnimation(self) -> Animation:
+        return self.m_CenterAnimation
+    
+    def GetMidAnimation(self, dir) -> Animation:
+        return self.m_MidAnimation[dir]
+    
+    def GetEndAnimation(self, dir) -> Animation:
+        return self.m_EndAnimation[dir]
+   
+    def _AnimFromOffset(self, FieldInCross:Vector2D):
+        crosses = self.m_Cfg
+        sprites = []
+        for c in crosses:
+            FieldInImage = Vector2D(*c) + FieldInCross
+            rect = RectFromField(FieldInImage.to_tuple(), 0, self.m_FieldSize)
+            sprites.append(StaticSprite(rect, self.m_Image))
+        return sprites
     
 
 class Sprites:
@@ -33,17 +76,15 @@ class Sprites:
         self.m_Fields = {}
         for k, v in self.m_Cfg["fields"].items():
             self.m_Fields[k] = self._GenSprites(v)
+        self.m_FireCross = FireCross(self.m_Cfg["cross"], self.m_Image, self.m_FieldSize)
         
     def GetStaticSprite(self, field):
         return self.m_Fields[field][0]
     
-    def _RectFromField(self, field, index):
-        return pygame.Rect((field[0] + index)*self.m_FieldSize, field[1]*self.m_FieldSize, self.m_FieldSize, self.m_FieldSize)
-            
     def _GenSprites(self, field):
         sprites = []
         for i in range(field[2]):
-            sprites.append(StaticSprite(self._RectFromField(field, i), self.m_Image))
+            sprites.append(StaticSprite(RectFromField(field, i, self.m_FieldSize), self.m_Image))
         return sprites
 
     def GetAnimation(self,fieldname):
@@ -52,7 +93,8 @@ class Sprites:
     def GetFieldSize(self):
         return self.m_FieldSize
     
-    def GetFieldSizeVec(self):
-        return AsVec2D((self.m_FieldSize, self.m_FieldSize))
+    def GetFireCross(self):
+        return self.m_FireCross
+    
         
 
