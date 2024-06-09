@@ -3,7 +3,7 @@ from Vec2d import Vector2D
 
 class Screen:
     def __init__(self, scr:pygame.Surface):
-        self.m_Screen = scr
+        self.m_Screen = scr      
         
     def DrawSprite(self, sprite, pos):
         pixelpos = self.ToPixelPos(pos)     # set up by game class to convert the game position to pixel position

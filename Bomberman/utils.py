@@ -1,8 +1,5 @@
-from Vec2d import Vector2D
+from Vec2d import Vector2D, Error
 
-class Error(Exception):
-    def __init__(self, message):
-        super().__init__(message)
         
 DirToVec = {
     'L' : Vector2D(-1, 0),
@@ -36,3 +33,13 @@ def NeighboringFields(posUpperLeft:Vector2D, tolerance:int):
     Points = Table[xAbs + 2*yAbs]    # return 1, 2, or 4 points
     return set(map(lambda p: f + Vector2D(p[0]*sign(xOff), p[1]*sign(yOff)), Points))    # adjust for all quadrants
 
+def FieldBoundary(OldPos:Vector2D, NewPos:Vector2D):
+    d = NewPos - OldPos
+
+    for i in range(2):
+        q = OldPos[i]//100
+        if d[i] > 0:
+            NewPos[i] = q*100 + 99
+        elif d[i] < 0:
+            NewPos[i] = q*100
+    return NewPos

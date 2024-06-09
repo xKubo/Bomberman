@@ -93,7 +93,7 @@ class Game:
         
         scr = self.m_Screen
         MapSprite = self.GetMapSprite()
-        self.m_Screen.DrawSprite(MapSprite, MapSprite.position)
+        self.m_Screen.DrawSprite(MapSprite, Vector2D(0,0))
     
         self.m_Arena.Draw(scr)
 

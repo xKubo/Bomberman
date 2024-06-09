@@ -3,7 +3,7 @@ from screen import Screen
 from sprites import StaticSprite, Animation, Sprites
 from gamemap import Map
 from Vec2d import Vector2D
-from utils import DirToVec, BestField, NeighboringFields
+from utils import *
 
 class BombCfg:
     pos = Vector2D(0,0),
@@ -26,14 +26,10 @@ class Bomb:
         self.m_Position = cfg.pos
         self.m_Timeout = cfg.bombTime
         self.m_Cfg = cfg
-        self.m_ID = id
         self.m_Arena = arena
         self.m_Status = Bomb.Status.Ticking
         self.m_WaitTime = self.m_BombTime
         self.m_Animation = Animation(self.m_Arena.GetBombSprites());
-
-    def ID(self):
-        return self.m_ID
 
     def Explode(self) :
         self.m_WaitTime = self.m_Cfg.flameTime
@@ -122,6 +118,11 @@ class Arena:
         def DelObject(self, obj):
             self.m_Objects.remove(obj)
             
+        def Type(self):
+            return self.m_Type
+        
+        def CanVisit(self):
+            return self.m_Type in "F "            
 
     def __init__(self, map:Map):
         self.m_Bombs = []
@@ -146,13 +147,15 @@ class Arena:
         fOld = BestField(OldPos)
         fNew = BestField(NewPos)
         if fOld == fNew:
-            return NewPos
-        f = self.GetField(fNew)
-        return NewPos if f.Type() == ' ' else OldPos  #toto treba upravit, treba najst hranicu policka
+            return (NewPos, fNew)
+        f = self.GetField(fNew)            
+        return NewPos if f.CanVisit() else FieldBoundary(OldPos, NewPos)
             
-    def MovePlayer(self, OldPos:Vector2D, NewPos:Vector2D):
-        UpdatedPos = self._CanGo(OldPos, NewPos)
-        self.MoveObject(self, OldPos, UpdatedPos)
+    def MovePlayer(self, player, OldPos:Vector2D, NewPos:Vector2D):
+        (UpdatedPos, field) = self._CanGo(OldPos, NewPos)
+        if field.Type() == 'f':
+            self.OnFire(player)
+        self.MoveObject(self, player, OldPos, UpdatedPos)
             
     def GetField(self, field:Vector2D) -> Field :
         return self.m_Fields[field.y*self.m_Width + field.x]
@@ -161,8 +164,14 @@ class Arena:
         fp = BestField(pos)
         return self.GetField(fp)
     
-    def RegPlayer(self, pos:Vector2D, player):
-        pass
+    def CanVisit(self, pos:Vector2D, dir):
+        fp = self.GetFieldByPos(pos)
+        fp += dir
+        f = self.GetField(fp)
+        return f.IsFree()        
+    
+    def RegPlayer(self, player, pos:Vector2D):
+        self.MovePlayer(player, pos, pos)
     
     def _HandleFirePoint(self, pos):
         f = self.GetFieldAt(pos)
@@ -205,10 +214,10 @@ class Arena:
         self.m_Walls.append(Wall(pos));
     
     def DrawFire(self, fire):
-        pass
+        raise Error("Not implemented")
     
     def HideFire(self, fire):
-        pass
+        raise Error("Not implemented")
         
     def _UpdateObjects(self, objs):
         for o in objs:

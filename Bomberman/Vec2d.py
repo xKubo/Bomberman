@@ -1,5 +1,9 @@
 import math
 
+class Error(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
 class Vector2D:
 
     def __init__(self, x, y):
@@ -20,6 +24,24 @@ class Vector2D:
         return self.x * other.x + self.y * other.y
     # Alias the __matmul__ method to dot so we can use a @ b as well as a.dot(b).
     __matmul__ = dot
+
+    def __getitem__(self, idx):
+        match (idx):
+            case 0:
+                return self.x
+            case 1:
+                return self.y
+            case _:
+                raise Error('Invalid index')
+    
+    def __setitem__(self, idx, val):
+        match (idx):
+            case 0:
+                self.x = val
+            case 1:
+                self.y = val
+            case _:
+                raise Error('Invalid index')
 
     def __sub__(self, other):
         """Vector subtraction."""

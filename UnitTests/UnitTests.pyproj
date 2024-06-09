@@ -24,6 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="testFieldBoundary.py" />
     <Compile Include="testSimpleTests.py" />
     <Compile Include="testComputeDir.py" />
     <Compile Include="testMap.py" />
