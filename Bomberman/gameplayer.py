@@ -33,10 +33,11 @@ class Player:
         self.m_Cfg = cfg
         p = self.m_Cfg["position"]
         self.m_Position = Vector2D(*p) * 100
-        self.m_Step = int(self.m_Cfg["step"] * 100)
+        self.m_Step = int(100*self.m_Cfg["step"])
         self.m_Game = game
-        self.m_Arena: Arena = game.Arena() 
-        self.m_Arena.RegPlayer(self, p)
+
+        self.m_Arena: Arena = game.Arena()
+        self.m_Arena.RegPlayer(self, self.m_Position)
         self.m_CurrentKeys = ""
         self.m_BombCfg = BombCfg()
         for d in DirToVec.keys():

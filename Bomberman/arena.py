@@ -24,18 +24,18 @@ class Bomb:
 
     def __init__(self, arena, cfg:BombCfg):
         self.m_Position = cfg.pos
-        self.m_Timeout = cfg.bombTime
+        self.m_WaitTime = cfg.bombTime
         self.m_Cfg = cfg
         self.m_Arena = arena
         self.m_Status = Bomb.Status.Ticking
-        self.m_WaitTime = self.m_BombTime
         self.m_Animation = Animation(self.m_Arena.GetBombSprites());
 
     def Explode(self) :
         self.m_WaitTime = self.m_Cfg.flameTime
         self.m_Status = Bomb.Status.Exploding
         self.m_Fire = self.m_Arena.FindFirePoints(self)
-        self.m_Arena.DrawFire(self.m_Fire)
+        self.m_Arena.ShowFlames(self.m_Fire)
+        self.m_Arena.DrawCross(self.m_Fire)
 
     def OnFire(self):
         self.Explode()
@@ -58,7 +58,10 @@ class Bomb:
                 pass
             
     def Position(self):
-        return Vector2D(*self.m_Cfg.pos)
+        return self.m_Cfg.pos
+    
+    def FlameSize(self):
+        return self.m_Cfg.flameSize
         
     def Draw(self, scr):
         match self.m_Status:
@@ -116,46 +119,62 @@ class Arena:
             self.m_Objects.append(obj)
             
         def DelObject(self, obj):
-            self.m_Objects.remove(obj)
+            if obj in self.m_Objects:
+                self.m_Objects.remove(obj)
             
         def Type(self):
-            return self.m_Type
+            return 'F' if self.m_FireCount > 0 else self.m_Type
         
         def CanVisit(self):
-            return self.m_Type in "F "            
+            return self.m_Type == ' '    
+        
+        def SetOnFire(self, OnOff):
+            if OnOff:
+                self.m_FireCount += 1
+            else:
+                self.m_FireCount -= 1            
 
-    def __init__(self, map:Map):
+    def __init__(self, map:Map, field_tolerance, sprites:Sprites):
+        self.m_Sprites:Sprites = sprites
         self.m_Bombs = []
         self.m_Walls = []
         self.m_Map = map
         self.m_Fields = []        
         self.m_Width = self.m_Map.width()
         self.m_Height = self.m_Map.height()
+        self.m_FieldTolerance = field_tolerance
         for l in self.m_Map.data():
             for ch in l:
                 self.m_Fields.append(Arena.Field(ch))
+
+    def DelObject(self, obj, field):
+        self.GetField(field).DelObject(obj)
+        
+    def AddObject(self, obj, field):
+        self.GetField(field).AddObject(obj)
         
     def MoveObject(self, obj, OldPos:Vector2D, NewPos:Vector2D):
-        fOld = NeighboringFields(OldPos)
-        fNew = NeighboringFields(NewPos)
+        fOld = NeighboringFields(OldPos, self.m_FieldTolerance)
+        fNew = NeighboringFields(NewPos, self.m_FieldTolerance)
         for f in fOld - fNew:
             self.DelObject(obj, f)
         for f in fNew - fOld:
             self.AddObject(obj, f)   
             
     def _CanGo(self, OldPos:Vector2D, NewPos:Vector2D):
-        fOld = BestField(OldPos)
-        fNew = BestField(NewPos)
-        if fOld == fNew:
-            return (NewPos, fNew)
-        f = self.GetField(fNew)            
-        return NewPos if f.CanVisit() else FieldBoundary(OldPos, NewPos)
+        fpOld = BestField(OldPos)
+        fpNew = BestField(NewPos)
+        f = self.GetField(fpNew) 
+        if fpOld == fpNew:
+            return (NewPos, f)                   
+        return (NewPos if f.CanVisit() else FieldBoundary(OldPos, NewPos), f)
             
     def MovePlayer(self, player, OldPos:Vector2D, NewPos:Vector2D):
         (UpdatedPos, field) = self._CanGo(OldPos, NewPos)
         if field.Type() == 'f':
             self.OnFire(player)
-        self.MoveObject(self, player, OldPos, UpdatedPos)
+        self.MoveObject(player, OldPos, UpdatedPos)
+        return UpdatedPos
             
     def GetField(self, field:Vector2D) -> Field :
         return self.m_Fields[field.y*self.m_Width + field.x]
@@ -185,21 +204,41 @@ class Arena:
         else:
             return SearchResult.Stop    
 
-    def FindFirePoints(self, bomb):
-        points = []
-        for dv in DirToVec.values():          
-            pt = self.ForEachPointInDirDo(bomb.Position(), dv, self._HandleFirePoint)  
-            points.append(pt)
-        return points
-            
-    def ForEachPointInDirDo(self, pos:Vector2D, vec:Vector2D, fn):
-        while True:
+    def _FindFirePointsInDir(self, bomb:Bomb, vec:Vector2D, fn):
+        counter = 0
+        pos = bomb.Position()
+        for i in range(bomb.FlameSize()) :
             pos += vec
+            ++counter
             field = self.GetField(pos)
             if not self.m_Map.IsInMap(pos):
-                return pos - vec
+                return counter - 1
             if fn(pos) == SearchResult.Stop:
-                return pos - vec
+                return counter - 1
+            
+    def FindFirePoints(self, bomb):
+        counts = []
+        pos = bomb.Position()
+        for dv in DirToVec.values():
+            cnt = self._FindFirePointsInDir(bomb, dv, self._HandleFirePoint)  
+            counts.append(cnt)
+        return {"counts": counts, "pos":bomb.Position()}
+            
+    def SetFireFields(self, fire, OnOff):
+        counts = fire["counts"]
+        pos = fire["pos"]
+        fpOrig = BestField(pos)
+        self.GetField(fpOrig).SetOnFire(OnOff)
+        for i, dv in enumerate(DirToVec.values()):            
+            for j in range(counts[i]):
+                fp = fpOrig + dv*j
+                self.GetField(fp).SetOnFire(OnOff)
+    
+    def HideFlames(self, fire):
+        self._SetFireFields(self, fire, 1)
+        
+    def ShowFlames(self, fire):
+        self._SetFireFields(self, fire, 0)            
 
     def AddBomb(self, cfg):        
         b = Bomb(self, cfg)
@@ -213,11 +252,11 @@ class Arena:
     def AddWall(self, pos:Vector2D):
         self.m_Walls.append(Wall(pos));
     
-    def DrawFire(self, fire):
-        raise Error("Not implemented")
-    
-    def HideFire(self, fire):
-        raise Error("Not implemented")
+    def GetBombSprites(self):
+        self.m_Sprites.GetAnimation('b')
+        
+    def GetFireCross(self, fire, size):
+        return self.m_Sprites.GetFireCross(fire, size)
         
     def _UpdateObjects(self, objs):
         for o in objs:

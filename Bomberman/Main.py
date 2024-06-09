@@ -46,7 +46,7 @@ appcfg = {
     "fps" : 20,
     "images" : {
         "name" :  "Bomberman.png",
-        "fieldsize" : 16,
+        "fieldsize" : 16, #pixels
         "transparent_color" : (56, 135, 0),
         "fields" : {
             'W': (3,3, 1), 
@@ -62,7 +62,7 @@ appcfg = {
         "cross" : [(2,6), (7,6), (2,11), (7,11)],
     },
     "game" : {
-        "step" : 0.25,
+        "step" : 0.25,  # 1/4 of field, 100 == one field
         "players" : [
             {
                 "name" : "P1",
@@ -75,6 +75,7 @@ appcfg = {
                 "keys" : ['up', 'left', 'down', 'right', 'p']
             },
         ],
+        "field_tolerance" : 0.10,   #1/5 of field 
         "map" : {
             "data" : [
             "WWWWWW",

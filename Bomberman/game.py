@@ -41,7 +41,8 @@ class Game:
         self.m_Cfg = cfg
         self.m_Images = images        
         self.m_Map = Map(cfg["map"])
-        self.m_Arena = Arena(self.m_Map)
+        field_tolerance = int(100*self.m_Cfg["field_tolerance"]) 
+        self.m_Arena = Arena(self.m_Map, field_tolerance, self.m_Images)
         self.m_Players = [];
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller

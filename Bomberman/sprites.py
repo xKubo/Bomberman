@@ -66,6 +66,15 @@ class FireCross:
             sprites.append(StaticSprite(rect, self.m_Image))
         return sprites
     
+    def Draw(self, scr, fire, size, phase):
+        counts = fire["counts"]
+        pos = fire["pos"]
+        scr.DrawSprite(self.m_CenterAnimation[phase], pos)
+        for i, dv in enumerate(DirToVec.values()):            
+            for j in range(counts[i]):
+                fp = pos + dv*j
+                scr.DrawSprite(self.m_EndAnimation[phase] if j == size else self.m_MidAnimation[phase], fp)
+    
 
 class Sprites:
     def __init__(self, cfg):
