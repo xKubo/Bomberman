@@ -6,11 +6,11 @@ from Vec2d import Vector2D
 from utils import *
 
 class BombCfg:
-    pos = Vector2D(0,0),
-    bombTime = 5,
-    flameSize = 5,
-    flameTime = 5,
-
+    pos = Vector2D(0,0)
+    bombTime = 500
+    flameSize = 5
+    flameTime = 5
+    
 class SearchResult(Enum):
     Continue = 0,
     Stop = 1,
@@ -22,20 +22,19 @@ class Bomb:
         Exploding = 1,
         Exploded = 2,
 
-    def __init__(self, arena, cfg:BombCfg):
+    def __init__(self, arena, bombAnimation, cfg:BombCfg):
         self.m_Position = cfg.pos
         self.m_WaitTime = cfg.bombTime
         self.m_Cfg = cfg
         self.m_Arena = arena
         self.m_Status = Bomb.Status.Ticking
-        self.m_Animation = Animation(self.m_Arena.GetBombSprites());
+        self.m_Animation = bombAnimation
 
     def Explode(self) :
         self.m_WaitTime = self.m_Cfg.flameTime
         self.m_Status = Bomb.Status.Exploding
         self.m_Fire = self.m_Arena.FindFirePoints(self)
         self.m_Arena.ShowFlames(self.m_Fire)
-        self.m_Arena.DrawCross(self.m_Fire)
 
     def OnFire(self):
         self.Explode()
@@ -47,7 +46,7 @@ class Bomb:
                     self.m_WaitTime =- 1
                     self.m_Animation.NextPhase()
                 else:
-                    self.Explode(self)                        
+                    self.Explode()                        
             case Bomb.Status.Exploding:            
                 if self.m_WaitTime>0:
                     self.m_WaitTime =- 1
@@ -81,8 +80,8 @@ class Wall:
         Destroying = 1,
         Destroyed = 2,
 
-    def __init__(self, sprites:Sprites, pos:Vector2D):
-        self.m_Animation = Animation(sprites)
+    def __init__(self, a:Animation, pos:Vector2D):
+        self.m_Animation = a
         self.m_Status = Wall.Status.Normal
         self.m_Frame = self.m_Animation.size()
         self.m_Position = pos
@@ -110,10 +109,11 @@ class Wall:
 class Arena:
 
     class Field:
-        def __init__(self, type):
+        def __init__(self, type, pos):
             self.m_Type = type
             self.m_Objects = []
-            self.m_FireCount = 0          
+            self.m_FireCount = 0  
+            self.m_Position = pos
 
         def AddObject(self, obj):
             self.m_Objects.append(obj)
@@ -143,9 +143,18 @@ class Arena:
         self.m_Width = self.m_Map.width()
         self.m_Height = self.m_Map.height()
         self.m_FieldTolerance = field_tolerance
-        for l in self.m_Map.data():
-            for ch in l:
-                self.m_Fields.append(Arena.Field(ch))
+        d = self.m_Map.data()
+        walls = []
+        for y in range(self.m_Height):
+            for x in range(self.m_Width):
+                ch = d[self.m_Width*y + x]
+                pos = Vector2D(x,y)
+                if ch=='w':
+                    walls.append(pos)
+                    ch = ' '
+                self.m_Fields.append(Arena.Field(ch, pos))
+        for wallpos in walls:
+            self.AddWall(wallpos)
 
     def DelObject(self, obj, field):
         self.GetField(field).DelObject(obj)
@@ -193,13 +202,12 @@ class Arena:
         self.MovePlayer(player, pos, pos)
     
     def _HandleFirePoint(self, pos):
-        f = self.GetFieldAt(pos)
+        f = self.GetField(pos)
                     
-        for o in f.objects :
+        for o in f.m_Objects :
             o.OnFire()
             
-        pt = f.type
-        if pt == ' ':
+        if f.Type() == ' ':
             return SearchResult.Continue
         else:
             return SearchResult.Stop    
@@ -224,7 +232,7 @@ class Arena:
             counts.append(cnt)
         return {"counts": counts, "pos":bomb.Position()}
             
-    def SetFireFields(self, fire, OnOff):
+    def _SetFireFields(self, fire, OnOff):
         counts = fire["counts"]
         pos = fire["pos"]
         fpOrig = BestField(pos)
@@ -235,25 +243,22 @@ class Arena:
                 self.GetField(fp).SetOnFire(OnOff)
     
     def HideFlames(self, fire):
-        self._SetFireFields(self, fire, 1)
+        self._SetFireFields(fire, 1)
         
     def ShowFlames(self, fire):
-        self._SetFireFields(self, fire, 0)            
+        self._SetFireFields(fire, 0)            
 
     def AddBomb(self, cfg):        
-        b = Bomb(self, cfg)
+        b = Bomb(self, self.m_Sprites.GetAnimation('b'), cfg)
         pos = b.Position()
-        f = self.GetFieldByPos(b.Position()) 
+        f = self.GetField(b.Position()) 
         if f.Type() != ' ':
             return      # can add bomb only on free space
         self.m_Bombs.append(b)
         f.AddObject(b)
         
     def AddWall(self, pos:Vector2D):
-        self.m_Walls.append(Wall(pos));
-    
-    def GetBombSprites(self):
-        self.m_Sprites.GetAnimation('b')
+        self.m_Walls.append(Wall(self.m_Sprites.GetAnimation('w'), pos));
         
     def GetFireCross(self, fire, size):
         return self.m_Sprites.GetFireCross(fire, size)

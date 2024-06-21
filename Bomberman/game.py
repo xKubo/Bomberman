@@ -57,7 +57,7 @@ class Game:
     def _CreatePlayer(self, index, cfg) -> Player:
 
         cfg["position"] = self.m_Map.positions()[index]
-        cfg["step"] = self.m_Cfg["step"]
+        cfg["step"] = self.m_Cfg["player_step"]
         p = Player(cfg, self)
         c = self.m_CreateController(cfg, p)
         p.m_Controller = c
@@ -79,6 +79,7 @@ class Game:
         return self.m_Images.GetAnimation(anim)
     
     def Update(self):  
+        self.m_Arena.Update()
         for p in self.m_Players:
             p.Update()           
     

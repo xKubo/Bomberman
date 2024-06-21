@@ -1,4 +1,7 @@
 from dataclasses import Field
+from os import times
+from re import S
+import string
 import pygame
 from Vec2d import Vector2D
 from utils import DirToVec
@@ -14,12 +17,14 @@ class StaticSprite(pygame.sprite.Sprite):
 
 class Animation:
     def __init__(self, sprites):
-        pygame.sprite.Sprite.__init__(self)
         self.sprites = sprites
         self.m_Phase = 0
         
     def NextPhase(self):
         self.m_Phase = (self.m_Phase + 1) % len(self.sprites)
+        
+    def SetPhase(self, phase:int):
+        self.m_Phase = phase
 
     def GetCurrent(self):
         s = self.sprites[self.m_Phase]        
@@ -30,7 +35,29 @@ class Animation:
 
     def GetNext(self):
         self.NextPhase()
-        return self.GetCurrent()   
+        return self.GetCurrent()  
+
+def ParseTimeToTicks(TimeStr:string, fps:int):
+    TickInMS = 1000//fps
+    if TimeStr.endswith('ms'):
+        ms = int(TimeStr[:-2])
+        return ms*TickInMS
+    if TimeStr.endswith('s'):
+        s = int(TimeStr[:-1])
+        return s*1000*TickInMS
+    if TimeStr.endswith('t'):
+        return int(TimeStr[:-1])
+    
+class TimeLine:
+    def __init__(self, cfg):
+        self.m_Time = ParseTimeToTicks(cfg["time"])
+        self.m_Data = cfg["data"]
+        self.m_Counter = 0
+
+    def GetPhaseForTick(num):
+        pass
+
+
     
 class FireCross:
     def __init__(self, cfg, image, fieldsize):

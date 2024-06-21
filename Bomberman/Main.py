@@ -50,7 +50,7 @@ appcfg = {
         "transparent_color" : (56, 135, 0),
         "fields" : {
             'W': (3,3, 1), 
-            'w': (3,3, 6),
+            'w': (4,3, 6),
             'b': (0,3, 3),   
             'L': (0,0, 3),
             'D': (3,0, 3),
@@ -60,9 +60,18 @@ appcfg = {
             'X': (0,2, 6),
         },
         "cross" : [(2,6), (7,6), (2,11), (7,11)],
+        "animations" : {
+            "b" : {"time": '200ms',  "type": "custom", "timeline" : "0121",},
+            "w" : {"time": '200ms',  "type": "normal"},
+            "f" : {"time": '500ms',  "type": "custom", 
+                   "timeline" : "0123333210"}, # for all parts of the cross
+            "p" : {"time": '100ms',  "type": "normal"},  # for player animations: LDRU
+            "X" : {"time": '500ms',  "type": "normal"},
+            },        
     },
     "game" : {
-        "step" : 0.25,  # 1/4 of field, 100 == one field
+        "player_step" : 0.25,   # quarter of field
+
         "players" : [
             {
                 "name" : "P1",
@@ -75,12 +84,12 @@ appcfg = {
                 "keys" : ['up', 'left', 'down', 'right', 'p']
             },
         ],
-        "field_tolerance" : 0.10,   #1/5 of field 
+        "field_tolerance" : 0.10,   
         "map" : {
             "data" : [
             "WWWWWW",
-            "W  w W",
-            "W  w W",
+            "W    W",
+            "W    W",
             "WwwwwW",
             "W    W",
             "WWWWWW",

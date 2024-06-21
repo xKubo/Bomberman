@@ -2,7 +2,7 @@ import utils
 import sprites
 from Vec2d import Vector2D
 
-from utils import DirToVec
+from utils import BestField, DirToVec
 from arena import Arena, BombCfg
 
 EmptyDir = ' '
@@ -61,14 +61,16 @@ class Player:
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
             if 'B' in cmd and not 'B' in self.m_CurrentKeys:
-                self.m_BombCfg.pos = self.GetPosition()
+                self.m_BombCfg.pos = utils.BestField(self.GetPosition())
                 self.m_Arena.AddBomb(self.m_BombCfg)
+                self.m_CurrentKeys = cmd
+                return
             self.m_CurrentKeys = cmd
             print(f'{cmd}:{self.m_Position}')            
             self.m_Direction = ComputeNewDir(self.m_Direction, cmd, self.CanVisit)            
 
     def Update(self):
-        if self.m_CurrentKeys != "":
+        if self.m_CurrentKeys not in ["", "B"]:            
             self.MoveTo(self.m_Direction)
             
     def Draw(self, scr):
