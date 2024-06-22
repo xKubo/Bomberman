@@ -22,7 +22,7 @@ class App:
         self.m_Keyboard = keyboard.Keyboard()
         self.m_Clock = pygame.time.Clock()         
         self.m_Screen = Screen(pygame.display.set_mode(displaysize))
-        self.m_Images = sprites.Sprites(self.m_Cfg["images"])
+        self.m_Images = sprites.Sprites(self.m_Cfg["images"], cfg["fps"])
         self.m_Game = game.Game(self.m_Cfg['game'], self.m_Images, self.CreateController, self.m_Screen)
         
 
@@ -65,7 +65,7 @@ appcfg = {
             "w" : {"time": '200ms',  "type": "normal"},
             "f" : {"time": '500ms',  "type": "custom", 
                    "timeline" : "0123333210"}, # for all parts of the cross
-            "p" : {"time": '100ms',  "type": "normal"},  # for player animations: LDRU
+            "LDRU" : {"time": '100ms',  "type": "normal"},  # for player animations
             "X" : {"time": '500ms',  "type": "normal"},
             },        
     },

@@ -22,16 +22,17 @@ class Bomb:
         Exploding = 1,
         Exploded = 2,
 
-    def __init__(self, arena, bombAnimation, cfg:BombCfg):
+    def __init__(self, arena, cfg:BombCfg, bombAnimation, firecrossAnimation):
         self.m_Position = cfg.pos
         self.m_WaitTime = cfg.bombTime
         self.m_Cfg = cfg
         self.m_Arena = arena
         self.m_Status = Bomb.Status.Ticking
-        self.m_Animation = bombAnimation
+        self.m_BombAnimation = bombAnimation
+        self.m_CrossAnimation = firecrossAnimation
 
     def Explode(self) :
-        self.m_WaitTime = self.m_Cfg.flameTime
+        self.m_WaitTime = self.m_CrossAnimation.TotalTime()
         self.m_Status = Bomb.Status.Exploding
         self.m_Fire = self.m_Arena.FindFirePoints(self)
         self.m_Arena.ShowFlames(self.m_Fire)
@@ -44,12 +45,13 @@ class Bomb:
             case Bomb.Status.Ticking:
                 if self.m_WaitTime>0:
                     self.m_WaitTime =- 1
-                    self.m_Animation.NextPhase()
+                    self.m_BombAnimation.Update()
                 else:
                     self.Explode()                        
             case Bomb.Status.Exploding:            
                 if self.m_WaitTime>0:
                     self.m_WaitTime =- 1
+                    self.m_CrossAnimation.Update()
                 else:
                     self.m_Arena.HideFlames(self.m_Fire)
                     self.m_Status = Bomb.Status.Exploded
@@ -65,9 +67,9 @@ class Bomb:
     def Draw(self, scr):
         match self.m_Status:
             case Bomb.Status.Ticking:
-                scr.DrawSprite(self.m_Animation.GetCurrent(), self.m_Position);
+                self.m_BombAnimation.Draw(scr, self.m_Position);
             case Bomb.Status.Exploding:
-                self.m_Arena.DrawFire(self.m_Fire)
+                self.m_CrossAnimation.Draw(scr, self.m_Fire);
             case Bomb.Status.Exploded:
                 pass            
 
@@ -96,7 +98,7 @@ class Wall:
             self.m_Status = Wall.Status.Destroyed             
 
     def Draw(self, screen:Screen):
-        screen.DrawSprite(self.m_Animation.GetCurrent(), self.m_Position)
+        self.m_Animation.Draw(screen, self.m_Position)
     
     def OnFire(self):        
         if self.m_Status != Wall.Status.Normal:
@@ -230,7 +232,7 @@ class Arena:
         for dv in DirToVec.values():
             cnt = self._FindFirePointsInDir(bomb, dv, self._HandleFirePoint)  
             counts.append(cnt)
-        return {"counts": counts, "pos":bomb.Position()}
+        return {"counts": counts, "pos":bomb.Position(), "size":bomb.FlameSize()}
             
     def _SetFireFields(self, fire, OnOff):
         counts = fire["counts"]
@@ -249,7 +251,7 @@ class Arena:
         self._SetFireFields(fire, 0)            
 
     def AddBomb(self, cfg):        
-        b = Bomb(self, self.m_Sprites.GetAnimation('b'), cfg)
+        b = Bomb(self, cfg, self.m_Sprites.CreateFieldAnimation('b'), self.m_Sprites.CreateCrossAnimation())
         pos = b.Position()
         f = self.GetField(b.Position()) 
         if f.Type() != ' ':
@@ -258,7 +260,7 @@ class Arena:
         f.AddObject(b)
         
     def AddWall(self, pos:Vector2D):
-        self.m_Walls.append(Wall(self.m_Sprites.GetAnimation('w'), pos));
+        self.m_Walls.append(Wall(self.m_Sprites.CreateFieldAnimation('w'), pos));
         
     def GetFireCross(self, fire, size):
         return self.m_Sprites.GetFireCross(fire, size)

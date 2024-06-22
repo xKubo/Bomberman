@@ -76,7 +76,7 @@ class Game:
         return self.m_Players
 
     def GetAnimation(self, anim):
-        return self.m_Images.GetAnimation(anim)
+        return self.m_Images.CreateFieldAnimation(anim)
     
     def Update(self):  
         self.m_Arena.Update()

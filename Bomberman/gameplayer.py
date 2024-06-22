@@ -51,7 +51,7 @@ class Player:
 
     def MoveTo(self, dir):
         self.m_Game.AddCmd("P" + self.m_Cfg["name"] + ":" + dir)
-        self.m_Sprites[self.m_Direction].NextPhase()
+        self.m_Sprites[self.m_Direction].Update()
         NewPos = self.m_Position + DirToVec[dir] * self.m_Step
         self.m_Position = self.m_Arena.MovePlayer(self, self.m_Position, NewPos)
 
@@ -74,7 +74,7 @@ class Player:
             self.MoveTo(self.m_Direction)
             
     def Draw(self, scr):
-        scr.DrawSprite(self.m_Sprites[self.m_Direction].GetCurrent(), self.GetPosition())
+        self.m_Sprites[self.m_Direction].Draw(scr, self.GetPosition())
         
     def DeployBomb(self):
         self.m_BombCfg.pos = self.GetPosition()
