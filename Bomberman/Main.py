@@ -61,17 +61,21 @@ appcfg = {
         },
         "cross" : [(2,6), (7,6), (2,11), (7,11)],
         "animations" : {
-            "b" : {"time": '200ms',  "type": "custom", "timeline" : "0121",},
-            "w" : {"time": '200ms',  "type": "normal"},
-            "f" : {"time": '500ms',  "type": "custom", 
+            "b" : {"time": '2s',  "type": "custom", "timeline" : "0121",},
+            "w" : {"time": '2s',  "type": "normal"},
+            "f" : {"time": '2s',  "type": "custom", 
                    "timeline" : "0123333210"}, # for all parts of the cross
             "LDRU" : {"time": '100ms',  "type": "normal"},  # for player animations
             "X" : {"time": '500ms',  "type": "normal"},
             },        
     },
     "game" : {
-        "player_step" : 0.25,   # quarter of field
-
+        "player_defaults" : {
+            "step" : 0.25,   # quarter of field
+            "bomb_time" : "2s",
+            "flame_time" : "2s",
+            "flame_size" : 5,
+        },
         "players" : [
             {
                 "name" : "P1",

@@ -29,54 +29,32 @@ class Animation:
         sprite = self.sprites[self.m_Timeline.CurrentFrame()]        
         scr.DrawSprite(sprite, pos)
 
-def ParseTimeToTicks(TimeStr:string, TickInMS:int):
-    if TimeStr.endswith('ms'):
-        ms = int(TimeStr[:-2])
-        return ms*TickInMS
-    if TimeStr.endswith('s'):
-        s = int(TimeStr[:-1])
-        return s*1000*TickInMS
-    if TimeStr.endswith('t'):
-        return int(TimeStr[:-1])
-    
-def ParseTimeLineCfg(cfg, Tick_MS:int):
-    type = cfg["type"]
-    res = {}
-    match type:
-        case "normal":
-            res["frames"] = []
-        case "custom":
-            frames = []
-            for c in cfg["timeline"]:
-                num = ord(c) - ord('0')
-                frames.append(num)
-            res["frames"] = frames
-        case _ : 
-            raise utils.Error("Invalid timeline type:" + type)
-    res["frame_time"] = ParseTimeToTicks(cfg["time"], Tick_MS)
-    return res;
+
     
 class TimeLine:
     def __init__(self, cfg, spritecount):
         self.m_FrameTime = cfg["frame_time"]
         self.m_Frames = cfg["frames"]
+        self.m_TickMS = cfg["tick_ms"]
         self.m_CurrentFrame = 0
-        self.m_Counter = self.m_FrameTime
         if not self.m_Frames:
             self.m_Frames = [i for i in range(spritecount)]
+        self.m_TotalTime = self.m_FrameTime*len(self.m_Frames)
+        self.m_Time = 0
 
     def TotalTime(self):
-        return self.m_FrameTime*len(self.m_Frames);
+        return self.m_TotalTime
 
     def CurrentFrame(self):
         return self.m_Frames[self.m_CurrentFrame]
 
     def Update(self):
-        if self.m_Counter != 0:
-            self.m_Counter -= 1
-            return;
-        self.m_Counter = self.m_FrameTime
-        self.m_CurrentFrame = 0 if self.m_CurrentFrame == len(self.m_Frames) else self.m_CurrentFrame+1
+        self.m_Time += self.m_TickMS
+        while self.m_Time > self.m_FrameTime:
+            self.m_CurrentFrame += 1
+            self.m_CurrentFrame %= len(self.m_Frames)
+            self.m_Time -= self.m_FrameTime
+        
     
 class FireCross:
     def __init__(self, cfg, image, fieldsize):
@@ -141,7 +119,7 @@ class FireCrossAnimation:
 
 class Sprites:
     def __init__(self, cfg, fps:int):
-        self.m_TickMS = 1000//fps;
+        self.m_TickMS = 1000//fps
         self.m_Cfg = cfg                
         self.m_Image = pygame.image.load(self.m_Cfg["name"]).convert_alpha()
         self.m_Image.set_colorkey(self.m_Cfg["transparent_color"]) 
@@ -152,7 +130,9 @@ class Sprites:
         self.m_TimelineData = {}
         for keys, v in self.m_Cfg["animations"].items():
             for c in keys:
-                self.m_TimelineData[c] = ParseTimeLineCfg(v, self.m_TickMS)
+                cfg = utils.ParseTimeLineCfg(v)
+                cfg["tick_ms"] = self.m_TickMS
+                self.m_TimelineData[c] = cfg
         self.m_FireCross = FireCross(self.m_Cfg["cross"], self.m_Image, self.m_FieldSize)
         
     def GetStaticSprite(self, field):

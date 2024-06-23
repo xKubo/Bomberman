@@ -1,3 +1,4 @@
+from email.policy import default
 import pygame
 import utils
 
@@ -46,18 +47,17 @@ class Game:
         self.m_Players = [];
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
+        defaults = self.m_Cfg["player_defaults"]
         for i,p in enumerate(cfg["players"]):
-            self.m_Players.append(self._CreatePlayer(i, p))
+            cfg = {**p, **defaults} # merge player_defaults with player cfg
+            self.m_Players.append(self._CreatePlayer(i, cfg))
         self.m_MapSprite = GenMapSprite(self.m_Map, images)
         self.m_MapSprite.position = ComputeMapSpritePosition(
             Vector2D(*self.m_Cfg["display_size"]), 
-            Vector2D(*self.m_MapSprite.rect.size))
-
+            Vector2D(*self.m_MapSprite.rect.size))       
     
     def _CreatePlayer(self, index, cfg) -> Player:
-
-        cfg["position"] = self.m_Map.positions()[index]
-        cfg["step"] = self.m_Cfg["player_step"]
+        cfg["position"] = self.m_Map.positions()[index]        
         p = Player(cfg, self)
         c = self.m_CreateController(cfg, p)
         p.m_Controller = c

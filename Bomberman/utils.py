@@ -43,3 +43,28 @@ def FieldBoundary(OldPos:Vector2D, NewPos:Vector2D):
         elif d[i] < 0:
             NewPos[i] = q*100
     return NewPos
+
+def ParseTimeToMS(TimeStr:str):
+    if TimeStr.endswith('ms'):
+        ms = int(TimeStr[:-2])
+        return ms
+    if TimeStr.endswith('s'):
+        s = int(TimeStr[:-1])
+        return s*1000
+    
+def ParseTimeLineCfg(cfg):
+    type = cfg["type"]
+    res = {}
+    match type:
+        case "normal":
+            res["frames"] = []
+        case "custom":
+            frames = []
+            for c in cfg["timeline"]:
+                num = ord(c) - ord('0')
+                frames.append(num)
+            res["frames"] = frames
+        case _ : 
+            raise Error("Invalid timeline type:" + type)
+    res["frame_time"] = ParseTimeToMS(cfg["time"])
+    return res;

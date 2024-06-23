@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f74642c5-8427-45ea-8976-f66c54955fc6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testNeighboringFields.py</StartupFile>
+    <StartupFile>testTimeline.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,6 +29,7 @@
     <Compile Include="testComputeDir.py" />
     <Compile Include="testMap.py" />
     <Compile Include="testNeighboringFields.py" />
+    <Compile Include="testTimeline.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bomberman\Bomberman.pyproj">

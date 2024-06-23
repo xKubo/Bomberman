@@ -39,7 +39,7 @@ class Player:
         self.m_Arena: Arena = game.Arena()
         self.m_Arena.RegPlayer(self, self.m_Position)
         self.m_CurrentKeys = ""
-        self.m_BombCfg = BombCfg()
+        self.m_BombCfg = BombCfg(cfg)
         for d in DirToVec.keys():
             self.m_Sprites[d] = self.m_Game.GetAnimation(d)
         
@@ -58,10 +58,13 @@ class Player:
     def CanVisit(self, dir):
         return self.m_Arena.CanVisit(self.m_Position, dir)
            
+    def OnFire(self):
+        print("OnFire")
+
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
             if 'B' in cmd and not 'B' in self.m_CurrentKeys:
-                self.m_BombCfg.pos = utils.BestField(self.GetPosition())
+                self.m_BombCfg.SetPosition(utils.BestField(self.GetPosition()))
                 self.m_Arena.AddBomb(self.m_BombCfg)
                 self.m_CurrentKeys = cmd
                 return
@@ -76,10 +79,6 @@ class Player:
     def Draw(self, scr):
         self.m_Sprites[self.m_Direction].Draw(scr, self.GetPosition())
         
-    def DeployBomb(self):
-        self.m_BombCfg.pos = self.GetPosition()
-        self.m_Arena.DeployBomb(self.m_BombCfg)
-
        
     
         

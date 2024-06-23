@@ -6,10 +6,26 @@ from Vec2d import Vector2D
 from utils import *
 
 class BombCfg:
-    pos = Vector2D(0,0)
-    bombTime = 500
-    flameSize = 5
-    flameTime = 5
+    def __init__(self, cfg):
+        self.m_Position = Vector2D(0,0)
+        self.m_BombTime = cfg["bomb_time"]
+        self.m_FlameTime = cfg["flame_time"]
+        self.m_FlameSize = cfg["flame_size"]
+        
+    def SetPosition(self, pos:Vector2D):
+        self.m_Position = pos
+
+    def Position(self):
+        return self.m_Position
+    
+    def BombTime(self):
+        return self.m_BombTime
+    
+    def FlameTime(self):
+        return self.m_FlameTime
+    
+    def FlameSize(self):
+        return self.m_FlameSize
     
 class SearchResult(Enum):
     Continue = 0,
@@ -23,8 +39,8 @@ class Bomb:
         Exploded = 2,
 
     def __init__(self, arena, cfg:BombCfg, bombAnimation, firecrossAnimation):
-        self.m_Position = cfg.pos
-        self.m_WaitTime = cfg.bombTime
+        self.m_Position = cfg.Position()
+        self.m_WaitTime = ParseTimeToMS(cfg.BombTime())
         self.m_Cfg = cfg
         self.m_Arena = arena
         self.m_Status = Bomb.Status.Ticking
@@ -59,10 +75,10 @@ class Bomb:
                 pass
             
     def Position(self):
-        return self.m_Cfg.pos
+        return self.m_Cfg.Position()
     
     def FlameSize(self):
-        return self.m_Cfg.flameSize
+        return self.m_Cfg.FlameSize()
         
     def Draw(self, scr):
         match self.m_Status:
@@ -215,9 +231,10 @@ class Arena:
             return SearchResult.Stop    
 
     def _FindFirePointsInDir(self, bomb:Bomb, vec:Vector2D, fn):
+        #error po vybuchu bomby treba nastavit policko na prazdne, aby counter neskoncil hned na prvom policku
         counter = 0
         pos = bomb.Position()
-        for i in range(bomb.FlameSize()) :
+        for i in range(1, bomb.FlameSize()) :
             pos += vec
             ++counter
             field = self.GetField(pos)
