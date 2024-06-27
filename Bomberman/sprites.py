@@ -106,10 +106,11 @@ class FireCross:
         size = fire["size"]
         counts = fire["counts"]
         scr.DrawSprite(self.m_CenterAnimation[phase], pos)
-        for i, dv in enumerate(DirToVec.values()):            
-            for j in range(counts[i]):
-                fp = pos + dv*j
-                scr.DrawSprite(self.m_EndAnimation[phase] if j == size else self.m_MidAnimation[phase], fp)
+        for i, (d,v) in enumerate(DirToVec.items()):            
+            for j in range(1, counts[i]):
+                fp = pos + v*j*100
+                a = self.m_EndAnimation[d][phase] if j == size else self.m_MidAnimation[d][phase]
+                scr.DrawSprite(a, fp)
                 
 class FireCrossAnimation:
     def __init__(self, cross:FireCross, timelinecfg):

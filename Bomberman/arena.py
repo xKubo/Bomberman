@@ -254,6 +254,7 @@ class Arena:
         for dv in DirToVec.values():
             cnt = self._FindFirePointsInDir(bomb, dv, self._HandleFirePoint)  
             counts.append(cnt)
+        counts = [3,2,2,2]
         return {"counts": counts, "pos":bomb.Position(), "size":bomb.FlameSize()}
             
     def _SetFireFields(self, fire, OnOff):
