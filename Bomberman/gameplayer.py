@@ -64,7 +64,9 @@ class Player:
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
             if 'B' in cmd and not 'B' in self.m_CurrentKeys:
-                self.m_BombCfg.SetPosition(utils.BestField(self.GetPosition()))
+                pos = self.GetPosition() + DirToVec['L']*0
+                pos = BestField(pos)*100
+                self.m_BombCfg.SetPosition(pos)
                 self.m_Arena.AddBomb(self.m_BombCfg)
                 self.m_CurrentKeys = cmd
                 return

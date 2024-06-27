@@ -40,16 +40,18 @@ class Bomb:
 
     def __init__(self, arena, cfg:BombCfg, bombAnimation, firecrossAnimation):
         self.m_Position = cfg.Position()
-        self.m_WaitTime = ParseTimeToMS(cfg.BombTime())
-        self.m_Cfg = cfg
-        self.m_Arena = arena
-        self.m_Status = Bomb.Status.Ticking
         self.m_BombAnimation = bombAnimation
-        self.m_CrossAnimation = firecrossAnimation
+        self.m_CrossAnimation = firecrossAnimation        
+        self.m_WaitTime = cfg.BombTime()
+        self.m_Cfg = cfg
+        self.m_Arena:Arena = arena
+        self.m_Status = Bomb.Status.Ticking
 
-    def Explode(self) :
-        self.m_WaitTime = self.m_CrossAnimation.TotalTime()
+    def Explode(self) :        
+        self.m_WaitTime = self.m_CrossAnimation.TotalTicks()
+        Log(f'B:Explode:{id(self)},{self.m_Position}, WT={self.m_WaitTime}')
         self.m_Status = Bomb.Status.Exploding
+        self.m_Arena.GetFieldByPos(self.m_Position).SetType(' ');
         self.m_Fire = self.m_Arena.FindFirePoints(self)
         self.m_Arena.ShowFlames(self.m_Fire)
 
@@ -57,16 +59,17 @@ class Bomb:
         self.Explode()
 
     def Update(self):
+        Log(f'B:{id(self)},{self.m_Position}:{self.m_Status}, WT={self.m_WaitTime}')
         match self.m_Status:
             case Bomb.Status.Ticking:
                 if self.m_WaitTime>0:
-                    self.m_WaitTime =- 1
+                    self.m_WaitTime -= 1
                     self.m_BombAnimation.Update()
                 else:
                     self.Explode()                        
             case Bomb.Status.Exploding:            
                 if self.m_WaitTime>0:
-                    self.m_WaitTime =- 1
+                    self.m_WaitTime -= 1
                     self.m_CrossAnimation.Update()
                 else:
                     self.m_Arena.HideFlames(self.m_Fire)
@@ -104,7 +107,7 @@ class Wall:
         self.m_Frame = self.m_Animation.size()
         self.m_Position = pos
         
-    def Update(self):   
+    def Update(self):  
         if self.m_Status != Wall.Status.Destroying:
             return
         if self.m_Frame >= 0:
@@ -146,6 +149,9 @@ class Arena:
         def CanVisit(self):
             return self.m_Type == ' '    
         
+        def SetType(self, NewType):
+            self.m_Type = NewType
+
         def SetOnFire(self, OnOff):
             if OnOff:
                 self.m_FireCount += 1
@@ -210,11 +216,11 @@ class Arena:
         fp = BestField(pos)
         return self.GetField(fp)
     
-    def CanVisit(self, pos:Vector2D, dir):
-        fp = self.GetFieldByPos(pos)
-        fp += dir
+    def CanVisit(self, pos:Vector2D, dir:str):
+        fp = BestField(pos)
+        fp += DirToVec[dir]
         f = self.GetField(fp)
-        return f.IsFree()        
+        return f.CanVisit()        
     
     def RegPlayer(self, player, pos:Vector2D):
         self.MovePlayer(player, pos, pos)
@@ -231,13 +237,12 @@ class Arena:
             return SearchResult.Stop    
 
     def _FindFirePointsInDir(self, bomb:Bomb, vec:Vector2D, fn):
-        #error po vybuchu bomby treba nastavit policko na prazdne, aby counter neskoncil hned na prvom policku
         counter = 0
-        pos = bomb.Position()
+        pos = bomb.Position()        
         for i in range(1, bomb.FlameSize()) :
             pos += vec
             ++counter
-            field = self.GetField(pos)
+            field = self.GetFieldByPos(pos)
             if not self.m_Map.IsInMap(pos):
                 return counter - 1
             if fn(pos) == SearchResult.Stop:
@@ -270,7 +275,7 @@ class Arena:
     def AddBomb(self, cfg):        
         b = Bomb(self, cfg, self.m_Sprites.CreateFieldAnimation('b'), self.m_Sprites.CreateCrossAnimation())
         pos = b.Position()
-        f = self.GetField(b.Position()) 
+        f = self.GetFieldByPos(b.Position()) 
         if f.Type() != ' ':
             return      # can add bomb only on free space
         self.m_Bombs.append(b)
@@ -290,8 +295,8 @@ class Arena:
         return  [o for o in objs if not o.IsDestroyed()]  
 
     def Update(self):
-        self._UpdateObjects(self.m_Bombs)
-        self._UpdateObjects(self.m_Walls)
+        self.m_Bombs = self._UpdateObjects(self.m_Bombs)
+        self.m_Walls = self._UpdateObjects(self.m_Walls)
 
     def Draw(self, scr):
         for w in self.m_Walls:

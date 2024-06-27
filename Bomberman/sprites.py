@@ -28,6 +28,10 @@ class Animation:
     def Draw(self, scr:Screen, pos:Vector2D):
         sprite = self.sprites[self.m_Timeline.CurrentFrame()]        
         scr.DrawSprite(sprite, pos)
+        
+    def TotalTicks(self):
+        return self.m_Timeline.TotalTicks()
+
 
 
     
@@ -40,10 +44,14 @@ class TimeLine:
         if not self.m_Frames:
             self.m_Frames = [i for i in range(spritecount)]
         self.m_TotalTime = self.m_FrameTime*len(self.m_Frames)
+        self.m_TotalTicks = self.m_TotalTime / self.m_TickMS
         self.m_Time = 0
 
     def TotalTime(self):
         return self.m_TotalTime
+
+    def TotalTicks(self):
+        return self.m_TotalTicks
 
     def CurrentFrame(self):
         return self.m_Frames[self.m_CurrentFrame]
@@ -113,6 +121,9 @@ class FireCrossAnimation:
         
     def TotalTime(self):
         return self.m_Timeline.TotalTime()
+
+    def TotalTicks(self):
+         return self.m_Timeline.TotalTicks()
     
     def Draw(self, scr, fire):
         self.m_Cross.Draw(scr, fire, self.m_Timeline.CurrentFrame())
@@ -134,6 +145,9 @@ class Sprites:
                 cfg["tick_ms"] = self.m_TickMS
                 self.m_TimelineData[c] = cfg
         self.m_FireCross = FireCross(self.m_Cfg["cross"], self.m_Image, self.m_FieldSize)
+        
+    def TickMS(self):
+        return self.m_TickMS
         
     def GetStaticSprite(self, field):
         return self.m_Fields[field][0]

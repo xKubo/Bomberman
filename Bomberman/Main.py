@@ -15,7 +15,7 @@ class App:
         return keyboard.KeyboardController(self.m_Keyboard, obj, cfg["keys"])
 
     def __init__(self, cfg):
-        displaysize = (640, 480)
+        displaysize = (1024, 768)
         cfg["game"]["display_size"] = displaysize
         self.m_Cfg = cfg
         pygame.init()
@@ -45,8 +45,8 @@ class App:
 appcfg = {
     "fps" : 20,
     "images" : {
-        "name" :  "Bomberman.png",
-        "fieldsize" : 16, #pixels
+        "name" :  "Bomberman_64.png",
+        "fieldsize" : 64, #pixels
         "transparent_color" : (56, 135, 0),
         "fields" : {
             'W': (3,3, 1), 
@@ -61,9 +61,9 @@ appcfg = {
         },
         "cross" : [(2,6), (7,6), (2,11), (7,11)],
         "animations" : {
-            "b" : {"time": '2s',  "type": "custom", "timeline" : "0121",},
-            "w" : {"time": '2s',  "type": "normal"},
-            "f" : {"time": '2s',  "type": "custom", 
+            "b" : {"time": '200ms',  "type": "custom", "timeline" : "0121",},
+            "w" : {"time": '200ms',  "type": "normal"},
+            "f" : {"time": '100ms',  "type": "custom", 
                    "timeline" : "0123333210"}, # for all parts of the cross
             "LDRU" : {"time": '100ms',  "type": "normal"},  # for player animations
             "X" : {"time": '500ms',  "type": "normal"},
@@ -73,7 +73,7 @@ appcfg = {
         "player_defaults" : {
             "step" : 0.25,   # quarter of field
             "bomb_time" : "2s",
-            "flame_time" : "2s",
+            "flame_time" : "3s",
             "flame_size" : 5,
         },
         "players" : [

@@ -68,3 +68,11 @@ def ParseTimeLineCfg(cfg):
             raise Error("Invalid timeline type:" + type)
     res["frame_time"] = ParseTimeToMS(cfg["time"])
     return res;
+
+def UpdateTimeToTicks(cfg, Keys, TickMS:int):
+    for k in Keys:
+        cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
+    
+
+def Log(Text):
+    print(Text)    

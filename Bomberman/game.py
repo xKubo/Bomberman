@@ -48,6 +48,7 @@ class Game:
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
         defaults = self.m_Cfg["player_defaults"]
+        utils.UpdateTimeToTicks(defaults, ["bomb_time", "flame_time"], images.TickMS())
         for i,p in enumerate(cfg["players"]):
             cfg = {**p, **defaults} # merge player_defaults with player cfg
             self.m_Players.append(self._CreatePlayer(i, cfg))
@@ -62,6 +63,9 @@ class Game:
         c = self.m_CreateController(cfg, p)
         p.m_Controller = c
         return p
+
+    def GetFieldSize(self):
+        return self.m_Images.GetFieldSize();
 
     def AddCmd(self, cmd):
         pass
