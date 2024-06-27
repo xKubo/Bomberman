@@ -74,7 +74,7 @@ appcfg = {
             "step" : 0.25,   # quarter of field
             "bomb_time" : "2s",
             "flame_time" : "3s",
-            "flame_size" : 5,
+            "flame_size" : 3,
         },
         "players" : [
             {

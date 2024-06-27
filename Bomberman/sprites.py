@@ -106,8 +106,8 @@ class FireCross:
         size = fire["size"]
         counts = fire["counts"]
         scr.DrawSprite(self.m_CenterAnimation[phase], pos)
-        for i, (d,v) in enumerate(DirToVec.items()):            
-            for j in range(1, counts[i]):
+        for i, (d,v) in enumerate(DirToVec.items()):
+            for j in range(1, counts[i] + 1):
                 fp = pos + v*j*100
                 a = self.m_EndAnimation[d][phase] if j == size else self.m_MidAnimation[d][phase]
                 scr.DrawSprite(a, fp)
