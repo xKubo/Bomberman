@@ -134,8 +134,14 @@ class Sprites:
         self.m_TickMS = 1000//fps
         self.m_Cfg = cfg                
         self.m_Image = pygame.image.load(self.m_Cfg["name"]).convert_alpha()
-        self.m_Image.set_colorkey(self.m_Cfg["transparent_color"]) 
         self.m_FieldSize = self.m_Cfg["fieldsize"]
+        sf = self.m_Cfg["scale_factor"]
+        if sf != 1:
+            self.m_Image = pygame.transform.scale_by(self.m_Image, sf)
+            self.m_FieldSize *= sf
+            
+        self.m_Image.set_colorkey(self.m_Cfg["transparent_color"]) 
+        
         self.m_Fields = {}
         for k, v in self.m_Cfg["fields"].items():
             self.m_Fields[k] = self._GenSprites(v)

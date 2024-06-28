@@ -45,8 +45,9 @@ class App:
 appcfg = {
     "fps" : 20,
     "images" : {
-        "name" :  "Bomberman_64.png",
-        "fieldsize" : 64, #pixels
+        "name" :  "Bomberman.png",
+        "scale_factor" : 2,
+        "fieldsize" : 16, #pixels
         "transparent_color" : (56, 135, 0),
         "fields" : {
             'W': (3,3, 1), 
