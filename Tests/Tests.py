@@ -1,8 +1,14 @@
 import utils
 import pygame
 from gameplayer import *
+import diag
 
 pygame.init()
+
+diag.init()
+
+diag.test('test');
+diag.test('test2');
 
 def Check(b, msg = ""):
   if not b:

@@ -7,4 +7,7 @@ class Screen:
         
     def DrawSprite(self, sprite, pos):
         pixelpos = self.ToPixelPos(pos)     # set up by game class to convert the game position to pixel position
+        self.DrawSpritePix(sprite, pixelpos)
+        
+    def DrawSpritePix(self, sprite, pixelpos):
         self.m_Screen.blit(sprite.image, pixelpos.to_tuple(), sprite.rect)  

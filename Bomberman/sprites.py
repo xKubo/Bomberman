@@ -1,4 +1,5 @@
 from screen import Screen
+import text
 import utils
 import string
 import pygame
@@ -130,9 +131,10 @@ class FireCrossAnimation:
         self.m_Cross.Draw(scr, fire, self.m_Timeline.CurrentFrame())
 
 class Sprites:
-    def __init__(self, cfg, fps:int):
+    def __init__(self, cfg, fps:int, textcfg):
         self.m_TickMS = 1000//fps
-        self.m_Cfg = cfg                
+        self.m_Cfg = cfg   
+        self.m_Text = text.Text(textcfg)
         self.m_Image = pygame.image.load(self.m_Cfg["name"]).convert_alpha()
         self.m_FieldSize = self.m_Cfg["fieldsize"]
         sf = self.m_Cfg["scale_factor"]
@@ -155,6 +157,9 @@ class Sprites:
         
     def TickMS(self):
         return self.m_TickMS
+    
+    def Text(self):
+        return self.m_Text
         
     def GetStaticSprite(self, field):
         return self.m_Fields[field][0]

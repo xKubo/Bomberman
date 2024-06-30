@@ -24,6 +24,8 @@
     <Compile Include="arena.py" />
     <Compile Include="Bomberman.py" />
     <Compile Include="commands.py" />
+    <Compile Include="configuration.py" />
+    <Compile Include="diag.py" />
     <Compile Include="game.py" />
     <Compile Include="gamemap.py" />
     <Compile Include="gameplayer.py" />
@@ -31,6 +33,7 @@
     <Compile Include="main.py" />
     <Compile Include="screen.py" />
     <Compile Include="sprites.py" />
+    <Compile Include="text.py" />
     <Compile Include="timequeue.py" />
     <Compile Include="utils.py" />
     <Compile Include="Vec2d.py" />

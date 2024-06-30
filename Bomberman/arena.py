@@ -4,12 +4,12 @@ from sprites import StaticSprite, Animation, Sprites
 from gamemap import Map
 from Vec2d import Vector2D
 from utils import *
+from diag import Log
 
 class BombCfg:
     def __init__(self, cfg):
         self.m_Position = Vector2D(0,0)
         self.m_BombTime = cfg["bomb_time"]
-        self.m_FlameTime = cfg["flame_time"]
         self.m_FlameSize = cfg["flame_size"]
         
     def SetPosition(self, pos:Vector2D):
@@ -20,9 +20,6 @@ class BombCfg:
     
     def BombTime(self):
         return self.m_BombTime
-    
-    def FlameTime(self):
-        return self.m_FlameTime
     
     def FlameSize(self):
         return self.m_FlameSize
@@ -158,7 +155,7 @@ class Arena:
             else:
                 self.m_FireCount -= 1            
 
-    def __init__(self, map:Map, field_tolerance, sprites:Sprites):
+    def __init__(self, map:Map, field_tolerance:int, sprites:Sprites):
         self.m_Sprites:Sprites = sprites
         self.m_Bombs = []
         self.m_Walls = []
@@ -208,7 +205,13 @@ class Arena:
             self.OnFire(player)
         self.MoveObject(player, OldPos, UpdatedPos)
         return UpdatedPos
+
+    def GetExtents(self):
+        return (self.m_Width, self.m_Height)
             
+    def GetFields(self):
+        return self.m_Fields
+
     def GetField(self, field:Vector2D) -> Field :
         return self.m_Fields[field.y*self.m_Width + field.x]
     

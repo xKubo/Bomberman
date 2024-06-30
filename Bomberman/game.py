@@ -1,4 +1,4 @@
-from email.policy import default
+import diag
 import pygame
 import utils
 
@@ -40,7 +40,7 @@ class Game:
         self.m_Screen = screen
         self.m_Screen.ToPixelPos = self.ToPixelPos
         self.m_Cfg = cfg
-        self.m_Images = images        
+        self.m_Images = images 
         self.m_Map = Map(cfg["map"])
         field_tolerance = int(100*self.m_Cfg["field_tolerance"]) 
         self.m_Arena = Arena(self.m_Map, field_tolerance, self.m_Images)
@@ -48,7 +48,7 @@ class Game:
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
         defaults = self.m_Cfg["player_defaults"]
-        utils.UpdateTimeToTicks(defaults, ["bomb_time", "flame_time"], images.TickMS())
+        utils.UpdateTimeToTicks(defaults, ["bomb_time"], images.TickMS())
         for i,p in enumerate(cfg["players"]):
             cfg = {**p, **defaults} # merge player_defaults with player cfg
             self.m_Players.append(self._CreatePlayer(i, cfg))
@@ -84,8 +84,11 @@ class Game:
     
     def Update(self):  
         self.m_Arena.Update()
+       # ShowArena(self.m_Diag, self.m_Arena)
+        #diag.test("t1") 
         for p in self.m_Players:
-            p.Update()           
+            p.Update()   
+         
     
     def Arena(self):
         return self.m_Arena
@@ -98,6 +101,10 @@ class Game:
     def Draw(self):
         
         scr = self.m_Screen
+        t = self.m_Images.Text()
+        t.SetPos(Vector2D(0,0))
+        ShowArena(scr, t, self.m_Arena)
+        
         MapSprite = self.GetMapSprite()
         self.m_Screen.DrawSprite(MapSprite, Vector2D(0,0))
     
@@ -108,3 +115,14 @@ class Game:
 
     
 
+
+def ShowArena(scr, text, arena:Arena):
+    (w, h) = arena.GetExtents()
+    fields = arena.GetFields()
+    for y in range(h):
+        s = ""
+        for x in range(w):
+            f = fields[y*w + x]
+            s += f.Type()
+        text.PrintLn(scr, s)
+    

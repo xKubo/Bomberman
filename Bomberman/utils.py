@@ -73,6 +73,3 @@ def UpdateTimeToTicks(cfg, Keys, TickMS:int):
     for k in Keys:
         cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
     
-
-def Log(Text):
-    print(Text)    
