@@ -28,7 +28,10 @@ def GenMapSprite(gmap, images):
 
     for y in range(h):
         for x in range(w):
-            sprite = images.GetStaticSprite(d[MapLine + x])
+            t = d[MapLine + x]
+            if t == 'w':    # remove destroyable walls from permanent map image
+                t = ' '
+            sprite = images.GetStaticSprite(t)
             MapSprite.image.blit(sprite.image, (x*fieldsize, y*fieldsize), sprite.rect)
         MapLine += w
     
@@ -84,8 +87,6 @@ class Game:
     
     def Update(self):  
         self.m_Arena.Update()
-       # ShowArena(self.m_Diag, self.m_Arena)
-        #diag.test("t1") 
         for p in self.m_Players:
             p.Update()   
          
@@ -112,9 +113,6 @@ class Game:
 
         for p in self.GetPlayers():
             p.Draw(scr)
-
-    
-
 
 def ShowArena(scr, text, arena:Arena):
     (w, h) = arena.GetExtents()
