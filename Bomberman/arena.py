@@ -44,10 +44,12 @@ class Bomb:
         self.m_Arena:Arena = arena
         self.m_Status = Bomb.Status.Ticking
 
-    def Explode(self) :        
-        self.m_WaitTime = self.m_CrossAnimation.TotalTicks()
-        Log(f'B:Explode:{id(self)},{self.m_Position}, WT={self.m_WaitTime}')
+    def Explode(self) :
+        if self.m_Status != Bomb.Status.Ticking:
+            return
         self.m_Status = Bomb.Status.Exploding
+        self.m_WaitTime = self.m_CrossAnimation.TotalTicks()
+        Log(f'B:Explode:{id(self)},{self.m_Position}, WT={self.m_WaitTime}')        
         self.BombField().SetType(' ');
         self.m_Fire = self.m_Arena.FindFirePoints(self)
         self.m_Arena.ShowFlames(self.m_Fire)
@@ -104,7 +106,8 @@ class Wall:
         Destroying = 1,
         Destroyed = 2,
 
-    def __init__(self, a:Animation, pos:Vector2D):
+    def __init__(self, a:Animation, pos:Vector2D, f):
+        self.m_Field = f
         self.m_Animation = a
         self.m_Status = Wall.Status.Normal
         self.m_WaitTime = self.m_Animation.TotalTicks()
@@ -117,6 +120,7 @@ class Wall:
             self.m_WaitTime -= 1
             self.m_Animation.Update()
         else:
+            self.m_Field.SetType(' ')
             self.m_Status = Wall.Status.Destroyed             
 
     def Position(self):
@@ -154,6 +158,9 @@ class Arena:
         
         def CanVisit(self):
             return self.m_Type == ' '    
+        
+        def Position(self):
+            return self.m_Position
         
         def SetType(self, NewType):
             self.m_Type = NewType
@@ -197,16 +204,17 @@ class Arena:
             f.AddObject(obj)   
             
     def _CanGo(self, OldPos:Vector2D, NewPos:Vector2D):
-        fpOld = BestField(OldPos)
-        fpNew = BestField(NewPos)
+        fpOld = OldPos//100
+        fpNew = NewPos//100
         f = self.GetField(fpNew) 
         if fpOld == fpNew:
             return (NewPos, f)                   
         return (NewPos if f.CanVisit() else FieldBoundary(OldPos, NewPos), f)
             
     def MovePlayer(self, player, OldPos:Vector2D, NewPos:Vector2D):
-        (UpdatedPos, field) = self._CanGo(OldPos, NewPos)
-        if field.Type() == 'f':
+        (UpdatedPos, f) = self._CanGo(OldPos, NewPos)
+        print(f"M:{OldPos}->{NewPos}: Field:{f.Position()}, CanVisit:{f.CanVisit()}, Type:{f.Type()}")
+        if f.Type() == 'f':
             self.OnFire(player)
         self.MoveObject(player, OldPos, UpdatedPos)
         return UpdatedPos
@@ -296,9 +304,10 @@ class Arena:
         f.AddObject(b)
         
     def AddWall(self, pos:Vector2D):
-        w = Wall(self.m_Sprites.CreateFieldAnimation('w'), pos)
-        self.m_Walls.append(w);
         f = self.GetField(pos)
+        w = Wall(self.m_Sprites.CreateFieldAnimation('w'), pos, f)
+        self.m_Walls.append(w);
+        
         f.SetType('w')
         f.AddObject(w)
         

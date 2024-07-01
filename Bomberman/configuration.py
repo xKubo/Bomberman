@@ -17,11 +17,11 @@ Images = {
         "cross" : [(2,6), (7,6), (2,11), (7,11)],
         "animations" : {
             "b" : {"time": '200ms',  "type": "custom", "timeline" : "0121",},
-            "w" : {"time": '200ms',  "type": "normal"},
+            "w" : {"time": '100ms',  "type": "normal"},
             "f" : {"time": '100ms',  "type": "custom", 
                    "timeline" : "01233210"}, # for all parts of the cross
             "LDRU" : {"time": '100ms',  "type": "normal"},  # for player animations
-            "X" : {"time": '500ms',  "type": "normal"},
+            "X" : {"time": '100ms',  "type": "normal"},
             },        
     }
 

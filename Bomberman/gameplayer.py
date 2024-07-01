@@ -1,3 +1,4 @@
+from enum import Enum
 import utils
 import sprites
 from Vec2d import Vector2D
@@ -27,6 +28,12 @@ def ComputeNewDir(LastDir, NewChars, CanGo):
     return LastDir
 
 class Player:      
+            
+    class Status(Enum):
+        Normal = 0,
+        Dying = 1,
+        Dead = 2,
+
     def __init__(self, cfg, game) -> None:
         self.m_Direction = 'R'
         self.m_Sprites = {}
@@ -35,11 +42,14 @@ class Player:
         self.m_Position = Vector2D(*p) * 100
         self.m_Step = int(100*self.m_Cfg["step"])
         self.m_Game = game
-
+        self.m_Status:Player.Status = Player.Status.Normal
+        self.m_Name = self.m_Cfg["name"]
         self.m_Arena: Arena = game.Arena()
         self.m_Arena.RegPlayer(self, self.m_Position)
         self.m_CurrentKeys = ""
         self.m_BombCfg = BombCfg(cfg)
+        self.m_DeadAnimation = self.m_Game.GetAnimation('X')
+        self.m_WaitTime = self.m_DeadAnimation.TotalTicks()
         for d in DirToVec.keys():
             self.m_Sprites[d] = self.m_Game.GetAnimation(d)
         
@@ -50,35 +60,59 @@ class Player:
         return self.m_Position
 
     def MoveTo(self, dir):
-        self.m_Game.AddCmd("P" + self.m_Cfg["name"] + ":" + dir)
+        if self.m_Status != Player.Status.Normal:
+            return;
+        print(f"{self.m_Name}:{dir}->{self.m_Position}")
         self.m_Sprites[self.m_Direction].Update()
         NewPos = self.m_Position + DirToVec[dir] * self.m_Step
         self.m_Position = self.m_Arena.MovePlayer(self, self.m_Position, NewPos)
 
     def CanVisit(self, dir):
+        print("CanVisit: ", self.m_Position, dir);
         return self.m_Arena.CanVisit(self.m_Position, dir)
            
     def OnFire(self):
-        print("OnFire")
+        if self.m_Status == Player.Status.Normal:
+            self.m_Status = Player.Status.Dying
+            
+
+    def DeployBomb(self):
+        if self.m_Status != Player.Status.Normal:
+            return;
+        pos = self.GetPosition() + DirToVec['L']*0
+        pos = BestField(pos)*100
+        self.m_BombCfg.SetPosition(pos)
+        self.m_Arena.AddBomb(self.m_BombCfg)        
 
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
             if 'B' in cmd and not 'B' in self.m_CurrentKeys:
-                pos = self.GetPosition() + DirToVec['L']*0
-                pos = BestField(pos)*100
-                self.m_BombCfg.SetPosition(pos)
-                self.m_Arena.AddBomb(self.m_BombCfg)
                 self.m_CurrentKeys = cmd
+                self.DeployBomb()
                 return
             self.m_CurrentKeys = cmd
             print(f'{cmd}:{self.m_Position}')            
             self.m_Direction = ComputeNewDir(self.m_Direction, cmd, self.CanVisit)            
 
     def Update(self):
-        if self.m_CurrentKeys not in ["", "B"]:            
-            self.MoveTo(self.m_Direction)
+        if self.m_Status == Player.Status.Dead:
+            return
+        if self.m_Status == Player.Status.Dying:
+            if self.m_WaitTime == 0:
+                self.m_Status = Player.Status.Dead;
+            self.m_WaitTime -= 1
+            self.m_DeadAnimation.Update()
+            return
+        if self.m_Status == Player.Status.Normal:
+            if self.m_CurrentKeys not in ["", "B"]:            
+                self.MoveTo(self.m_Direction)
             
     def Draw(self, scr):
+        if self.m_Status == Player.Status.Dead:
+            return   
+        if self.m_Status == Player.Status.Dying:
+            self.m_DeadAnimation.Draw(scr, self.GetPosition())
+            return
         self.m_Sprites[self.m_Direction].Draw(scr, self.GetPosition())
         
        
