@@ -45,8 +45,8 @@ class Game:
         self.m_Cfg = cfg
         self.m_Images = images 
         self.m_Map = Map(cfg["map"])
-        field_tolerance = int(100*self.m_Cfg["field_tolerance"]) 
-        self.m_Arena = Arena(self.m_Map, field_tolerance, self.m_Images)
+        self.m_FieldTolerance = int(100*self.m_Cfg["field_tolerance"]) 
+        self.m_Arena = Arena(self.m_Map, self.m_FieldTolerance, self.m_Images)
         self.m_Players = [];
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
@@ -103,15 +103,20 @@ class Game:
         
         scr = self.m_Screen
         t = self.m_Images.Text()
-        t.SetPos(Vector2D(0,0))
-        ShowArena(scr, t, self.m_Arena)
+
         
         MapSprite = self.GetMapSprite()
         self.m_Screen.DrawSprite(MapSprite, Vector2D(0,0))
     
+        t.SetPos(Vector2D(0,0))
+        ShowArena(scr, t, self.m_Arena)    
         self.m_Arena.Draw(scr)
 
+
+        t.SetPos(Vector2D(140, 0))
         for p in self.GetPlayers():
+            pos = p.Position()            
+            t.PrintLn(scr, f"{p.Name()}:{pos}:BF{utils.BestField(pos)}:NF{utils.NeighboringFields(pos,self.m_FieldTolerance)}:{p.GetStatus()}");
             p.Draw(scr)
 
 def ShowArena(scr, text, arena:Arena):

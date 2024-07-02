@@ -22,7 +22,7 @@ class App:
 
     def __init__(self, cfg):
 
-        displaysize = (1024, 768)
+        displaysize = (1920, 1080)
         cfg["game"]["display_size"] = displaysize
         self.m_Cfg = cfg
         pygame.init()

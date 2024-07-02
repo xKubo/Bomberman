@@ -9,10 +9,12 @@ class Text:
          self.m_Image = pygame.image.load(cfg["name"]).convert()
          invchar = cfg["invalid_char"]
          self.m_Table = cfg["chars_table"]
+         self.m_Table = cfg["chars_table"]
          self.m_Dims = cfg["dims"]
          self.m_LetterSize = cfg["letter_size"]
          self.m_Position = Vector2D(0, 0)
          self.m_LetterWidth = self.m_LetterSize*3//4
+         self.m_InitialX = 0
          
          self.m_InvalidCharNum = self._AsciiToSpriteNum(ord(invchar))
          self.m_InvalidCharSprite = self._SpriteNumToSprite(self.m_InvalidCharNum)
@@ -49,6 +51,7 @@ class Text:
     
     def SetPos(self, pos:Vector2D):
         self.m_Position = pos
+        self.m_InitialX = pos.x
 
     def Print(self, scr, *textargs):
         s = ''.join(*textargs) 
@@ -59,6 +62,6 @@ class Text:
 
     def PrintLn(self, scr, *textargs):
         self.Print(scr, *textargs)
-        self.m_Position.x = 0
+        self.m_Position.x = self.m_InitialX
         self.m_Position.y += self.m_LetterSize
             

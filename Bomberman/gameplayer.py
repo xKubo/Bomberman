@@ -52,11 +52,17 @@ class Player:
         self.m_WaitTime = self.m_DeadAnimation.TotalTicks()
         for d in DirToVec.keys():
             self.m_Sprites[d] = self.m_Game.GetAnimation(d)
+         
+    def GetStatus(self):
+        return self.m_Status
+
+    def Name(self):
+        return self.m_Name
         
-    def GetDirection(self):
+    def Direction(self):
         return self.m_Direction
 
-    def GetPosition(self):
+    def Position(self):
         return self.m_Position
 
     def MoveTo(self, dir):
@@ -79,7 +85,7 @@ class Player:
     def DeployBomb(self):
         if self.m_Status != Player.Status.Normal:
             return;
-        pos = self.GetPosition() + DirToVec['L']*0
+        pos = self.Position()
         pos = BestField(pos)*100
         self.m_BombCfg.SetPosition(pos)
         self.m_Arena.AddBomb(self.m_BombCfg)        
@@ -111,9 +117,9 @@ class Player:
         if self.m_Status == Player.Status.Dead:
             return   
         if self.m_Status == Player.Status.Dying:
-            self.m_DeadAnimation.Draw(scr, self.GetPosition())
+            self.m_DeadAnimation.Draw(scr, self.Position())
             return
-        self.m_Sprites[self.m_Direction].Draw(scr, self.GetPosition())
+        self.m_Sprites[self.m_Direction].Draw(scr, self.Position())
         
        
     
