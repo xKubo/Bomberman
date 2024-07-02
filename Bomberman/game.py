@@ -115,8 +115,10 @@ class Game:
 
         t.SetPos(Vector2D(140, 0))
         for p in self.GetPlayers():
-            pos = p.Position()            
-            t.PrintLn(scr, f"{p.Name()}:{pos}:BF{utils.BestField(pos)}:NF{utils.NeighboringFields(pos,self.m_FieldTolerance)}:{p.GetStatus()}");
+            pos = p.Position()           
+            neighbors = list(utils.NeighboringFields(pos,self.m_FieldTolerance))            
+            neighbors.sort(key=lambda v : v.to_tuple())
+            t.PrintLn(scr, f"{p.Name()}:{pos}:BF{utils.BestField(pos)}:NF{neighbors}:{p.GetStatus()}");
             p.Draw(scr)
 
 def ShowArena(scr, text, arena:Arena):

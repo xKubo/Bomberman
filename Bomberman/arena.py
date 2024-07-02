@@ -6,6 +6,27 @@ from Vec2d import Vector2D
 from utils import *
 from diag import Log
 
+EmptyDir = ' '
+Dirs = 'LURD'
+
+def OppositeDirs(Dir):
+    index = Dirs.index(Dir)
+    return (Dirs[(index+1)%4], Dirs[(index+3)%4])
+
+def ComputeNewDir(LastDir, NewChars, CanGo):
+    if NewChars=='':
+        return LastDir
+    CurrDir = NewChars[0]
+    if LastDir == EmptyDir:
+        return CurrDir
+    if LastDir not in NewChars:
+        return CurrDir
+    opp = OppositeDirs(LastDir)
+    for o in opp:
+        if o in NewChars and CanGo(o):
+            return o
+    return LastDir
+
 class BombCfg:
     def __init__(self, cfg):
         self.m_Position = Vector2D(0,0)
@@ -191,7 +212,7 @@ class Arena:
                     ch = ' '
                 self.m_Fields.append(Arena.Field(ch, pos))
         for wallpos in walls:
-            self.AddWall(wallpos)
+            self.AddWall(wallpos)           
         
     def MoveObject(self, obj, OldPos:Vector2D, NewPos:Vector2D):
         fOld = NeighboringFields(OldPos, self.m_FieldTolerance)
@@ -211,13 +232,15 @@ class Arena:
             return (NewPos, f)                   
         return (NewPos if f.CanVisit() else FieldBoundary(OldPos, NewPos), f)
             
-    def MovePlayer(self, player, OldPos:Vector2D, NewPos:Vector2D):
+    def MovePlayer(self, player, OldPos:Vector2D, lastdir, step, keys):
+        dir = ComputeNewDir(lastdir, keys, lambda d: self.CanVisit(OldPos, d))   
+        NewPos = OldPos + DirToVec[dir] * step
         (UpdatedPos, f) = self._CanGo(OldPos, NewPos)
         print(f"M:{OldPos}->{NewPos}: Field:{f.Position()}, CanVisit:{f.CanVisit()}, Type:{f.Type()}")
         if f.Type() == 'f':
             self.OnFire(player)
         self.MoveObject(player, OldPos, UpdatedPos)
-        return UpdatedPos
+        return (UpdatedPos, dir)
 
     def GetExtents(self):
         return (self.m_Width, self.m_Height)
@@ -239,7 +262,10 @@ class Arena:
         return f.CanVisit()        
     
     def RegPlayer(self, player, pos:Vector2D):
-        self.MovePlayer(player, pos, pos)
+        fps = NeighboringFields(pos, self.m_FieldTolerance)
+        for fp in fps:
+            f = self.GetField(fp)
+            f.AddObject(player)
     
     def _HandleFirePoint(self, pos):
         f = self.GetField(pos)

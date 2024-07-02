@@ -3,7 +3,7 @@ import unittest
 
 class TestApp(unittest.TestCase):
     
-    def test_1(self):
+    def test_MovePlayer(self):
         self.assertEqual(0, 0)
 
 

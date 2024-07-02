@@ -4,28 +4,7 @@ import sprites
 from Vec2d import Vector2D
 
 from utils import BestField, DirToVec
-from arena import Arena, BombCfg
-
-EmptyDir = ' '
-Dirs = 'LURD'
-
-def OppositeDirs(Dir):
-    index = Dirs.index(Dir)
-    return (Dirs[(index+1)%4], Dirs[(index+3)%4])
-
-def ComputeNewDir(LastDir, NewChars, CanGo):
-    if NewChars=='':
-        return LastDir
-    CurrDir = NewChars[0]
-    if LastDir == EmptyDir:
-        return CurrDir
-    if LastDir not in NewChars:
-        return CurrDir
-    opp = OppositeDirs(LastDir)
-    for o in opp:
-        if o in NewChars and CanGo(o):
-            return o
-    return LastDir
+from arena import Arena, BombCfg, EmptyDir, Dirs
 
 class Player:      
             
@@ -65,17 +44,11 @@ class Player:
     def Position(self):
         return self.m_Position
 
-    def MoveTo(self, dir):
+    def Move(self):
         if self.m_Status != Player.Status.Normal:
             return;
-        print(f"{self.m_Name}:{dir}->{self.m_Position}")
         self.m_Sprites[self.m_Direction].Update()
-        NewPos = self.m_Position + DirToVec[dir] * self.m_Step
-        self.m_Position = self.m_Arena.MovePlayer(self, self.m_Position, NewPos)
-
-    def CanVisit(self, dir):
-        print("CanVisit: ", self.m_Position, dir);
-        return self.m_Arena.CanVisit(self.m_Position, dir)
+        (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Step, self.m_CurrentKeys)
            
     def OnFire(self):
         if self.m_Status == Player.Status.Normal:
@@ -97,8 +70,7 @@ class Player:
                 self.DeployBomb()
                 return
             self.m_CurrentKeys = cmd
-            print(f'{cmd}:{self.m_Position}')            
-            self.m_Direction = ComputeNewDir(self.m_Direction, cmd, self.CanVisit)            
+         
 
     def Update(self):
         if self.m_Status == Player.Status.Dead:
@@ -111,7 +83,7 @@ class Player:
             return
         if self.m_Status == Player.Status.Normal:
             if self.m_CurrentKeys not in ["", "B"]:            
-                self.MoveTo(self.m_Direction)
+                self.Move()
             
     def Draw(self, scr):
         if self.m_Status == Player.Status.Dead:

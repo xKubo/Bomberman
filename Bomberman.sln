@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Tests", "Tests\Tests.pyproj", "{FEB9747A-977F-46EF-B3A9-5D60563360D5}"
-EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Bomberman", "Bomberman\Bomberman.pyproj", "{5D91F3F9-25BF-408F-B57D-72633DFA3C93}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "UnitTests", "UnitTests\UnitTests.pyproj", "{F74642C5-8427-45EA-8976-F66C54955FC6}"
@@ -15,8 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FEB9747A-977F-46EF-B3A9-5D60563360D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEB9747A-977F-46EF-B3A9-5D60563360D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D91F3F9-25BF-408F-B57D-72633DFA3C93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D91F3F9-25BF-408F-B57D-72633DFA3C93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F74642C5-8427-45EA-8976-F66C54955FC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

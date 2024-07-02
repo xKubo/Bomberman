@@ -1,3 +1,4 @@
+from turtle import Vec2D
 from Vec2d import Vector2D, Error
 
         
@@ -23,7 +24,7 @@ def sign(x):
     return 1 if x>=0 else -1
 
 # return neighboring fields
-def NeighboringFields(posUpperLeft:Vector2D, tolerance:int):
+def NeighboringFields(posUpperLeft:Vector2D, tolerance:int) -> set: 
     pos = Vector2D(posUpperLeft.x + 50, posUpperLeft.y + 50)  # position of the center 
     f = BestField(posUpperLeft)
     xOff = pos.x%100 - 50   # distance from center point
@@ -32,6 +33,7 @@ def NeighboringFields(posUpperLeft:Vector2D, tolerance:int):
     yAbs = abs(yOff) > tolerance  
     Points = Table[xAbs + 2*yAbs]    # return 1, 2, or 4 points
     return set(map(lambda p: f + Vector2D(p[0]*sign(xOff), p[1]*sign(yOff)), Points))    # adjust for all quadrants
+
 
 def FieldBoundary(OldPos:Vector2D, NewPos:Vector2D):
     d = NewPos - OldPos
