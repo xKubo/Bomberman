@@ -86,23 +86,22 @@ class Bomb:
 
     def Update(self):
         Log(f'B:{id(self)},{self.m_Position}:{self.m_Status}, WT={self.m_WaitTime}')
-        match self.m_Status:
-            case Bomb.Status.Ticking:
-                if self.m_WaitTime>0:
-                    self.m_WaitTime -= 1
-                    self.m_BombAnimation.Update()
-                else:
-                    self.Explode()                        
-            case Bomb.Status.Exploding:            
-                if self.m_WaitTime>0:
-                    self.m_WaitTime -= 1
-                    self.m_CrossAnimation.Update()
-                else:
-                    self.m_Arena.HideFlames(self.m_Fire)
-                    self.m_Status = Bomb.Status.Exploded
-            case Bomb.Status.Exploded:
-                pass
-            
+        if self.m_Status==Bomb.Status.Ticking:
+            if self.m_WaitTime>0:
+                self.m_WaitTime -= 1
+                self.m_BombAnimation.Update()
+            else:
+                self.Explode()                        
+        elif self.m_Status==Bomb.Status.Exploding:
+            if self.m_WaitTime>0:
+                self.m_WaitTime -= 1
+                self.m_CrossAnimation.Update()
+            else:
+                self.m_Arena.HideFlames(self.m_Fire)
+                self.m_Status = Bomb.Status.Exploded
+        else: 
+            pass
+  
     def Position(self):
         return self.m_Cfg.Position()
     
@@ -110,13 +109,12 @@ class Bomb:
         return self.m_Cfg.FlameSize()
         
     def Draw(self, scr):
-        match self.m_Status:
-            case Bomb.Status.Ticking:
-                self.m_BombAnimation.Draw(scr, self.m_Position);
-            case Bomb.Status.Exploding:
-                self.m_CrossAnimation.Draw(scr, self.m_Fire);
-            case Bomb.Status.Exploded:
-                pass            
+        if self.m_Status==Bomb.Status.Ticking:
+            self.m_BombAnimation.Draw(scr, self.m_Position)                     
+        elif self.m_Status==Bomb.Status.Exploding:
+            self.m_CrossAnimation.Draw(scr, self.m_Fire)
+        else: 
+            pass        
 
     def IsDestroyed(self):
         return self.m_Status == Bomb.Status.Exploded

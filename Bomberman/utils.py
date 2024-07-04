@@ -57,17 +57,16 @@ def ParseTimeToMS(TimeStr:str):
 def ParseTimeLineCfg(cfg):
     type = cfg["type"]
     res = {}
-    match type:
-        case "normal":
-            res["frames"] = []
-        case "custom":
-            frames = []
-            for c in cfg["timeline"]:
-                num = ord(c) - ord('0')
-                frames.append(num)
-            res["frames"] = frames
-        case _ : 
-            raise Error("Invalid timeline type:" + type)
+    if type=="normal":
+        res["frames"] = []
+    elif type=="custom":
+        frames = []
+        for c in cfg["timeline"]:
+            num = ord(c) - ord('0')
+            frames.append(num)
+        res["frames"] = frames
+    else: 
+        raise Error("Invalid timeline type:" + type)
     res["frame_time"] = ParseTimeToMS(cfg["time"])
     return res;
 

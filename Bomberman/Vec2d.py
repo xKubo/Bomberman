@@ -26,21 +26,21 @@ class Vector2D:
     __matmul__ = dot
 
     def __getitem__(self, idx):
-        match (idx):
-            case 0:
-                return self.x
-            case 1:
-                return self.y
-            case _:
-                raise Error('Invalid index')
+        if idx == 0:
+            return self.x
+        if idx == 1:
+            return self.y
+        raise Error('Invalid index')        
+                
     
     def __setitem__(self, idx, val):
-        match (idx):
-            case 0:
+            if idx == 0:
                 self.x = val
-            case 1:
+                return
+            elif idx == 1:
                 self.y = val
-            case _:
+                return
+            else:
                 raise Error('Invalid index')
 
     def __sub__(self, other):
