@@ -23,9 +23,11 @@ Table = [
 def sign(x):
     return 1 if x>=0 else -1
 
+MiddleOfTheField = Vector2D(50, 50)
+
 # return neighboring fields
 def NeighboringFields(posUpperLeft:Vector2D, tolerance:int) -> set: 
-    pos = Vector2D(posUpperLeft.x + 50, posUpperLeft.y + 50)  # position of the center 
+    pos = posUpperLeft + MiddleOfTheField  # position of the center 
     f = BestField(posUpperLeft)
     xOff = pos.x%100 - 50   # distance from center point
     yOff = pos.y%100 - 50
@@ -34,6 +36,23 @@ def NeighboringFields(posUpperLeft:Vector2D, tolerance:int) -> set:
     Points = Table[xAbs + 2*yAbs]    # return 1, 2, or 4 points
     return set(map(lambda p: f + Vector2D(p[0]*sign(xOff), p[1]*sign(yOff)), Points))    # adjust for all quadrants
 
+
+
+def FieldsInDirection(posLeftUpper:Vector2D, dv:Vector2D, field_tolerance:int):
+    pos = posLeftUpper + MiddleOfTheField
+    if dv.x == 0:       
+        n = Vector2D(1,0)
+    else:
+        n = Vector2D(0,1)
+    f = BestField(posLeftUpper)
+    m = f * 100 + MiddleOfTheField  #middlepoint
+    dist = pos[n[1]]-m[n[1]]
+    res = f + dv
+    if abs(dist) < field_tolerance:
+        return [res]
+    else:
+        return [res, res+n if dist>0 else res-n]            
+     
 
 def FieldBoundary(OldPos:Vector2D, NewPos:Vector2D):
     d = NewPos - OldPos

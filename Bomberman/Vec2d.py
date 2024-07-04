@@ -89,3 +89,7 @@ class Vector2D:
     def to_polar(self):
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), math.atan2(self.y, self.x)
+
+    def norm(self):
+        """Return the vector's norm """
+        return Vector2D(self.y, -self.x)

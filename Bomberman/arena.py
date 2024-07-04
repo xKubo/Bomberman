@@ -223,18 +223,22 @@ class Arena:
             f.AddObject(obj)   
             
     def _CanGo(self, OldPos:Vector2D, NewPos:Vector2D):
-        fpOld = OldPos//100
-        fpNew = NewPos//100
-        f = self.GetField(fpNew) 
+        fpOld = BestField(OldPos)
+        fpNew = BestField(NewPos)
+        fOld = self.GetField(fpOld)
+        fNew = self.GetField(fpNew) 
         if fpOld == fpNew:
-            return (NewPos, f)                   
-        return (NewPos if f.CanVisit() else FieldBoundary(OldPos, NewPos), f)
+            return (NewPos, fOld, False)                   
+        return (NewPos, fNew, True) if fNew.CanVisit() else (FieldBoundary(OldPos, NewPos), fOld)
+
+    def CanGo(self, pos:Vector2D, dir:Vector2D, step:int):
+        pass
             
     def MovePlayer(self, player, OldPos:Vector2D, lastdir, step, keys):
-        dir = ComputeNewDir(lastdir, keys, lambda d: self.CanVisit(OldPos, d))   
-        NewPos = OldPos + DirToVec[dir] * step
-        (UpdatedPos, f) = self._CanGo(OldPos, NewPos)
-        print(f"M:{OldPos}->{NewPos}: Field:{f.Position()}, CanVisit:{f.CanVisit()}, Type:{f.Type()}")
+        # find dir that the player will move 
+        dir = ComputeNewDir(lastdir, keys, lambda d: self.CanGo(OldPos, DirToVec[d], 100)[2])
+        (UpdatedPos, f, cango) = self.CanGo(OldPos, DirToVec[dir], step)
+        print(f"M:{OldPos}->{UpdatedPos}: Field:{f.Position()}, CanVisit:{f.CanVisit()}, Type:{f.Type()}")
         if f.Type() == 'f':
             self.OnFire(player)
         self.MoveObject(player, OldPos, UpdatedPos)
