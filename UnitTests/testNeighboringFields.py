@@ -32,6 +32,33 @@ class TestNeighboringFields(unittest.TestCase):
     def test_FourFieldsLeftUpperQuadrantInTolerance(self):
         fields = self.NFields((485,485))  # best field is [5,5]
         self.CheckFields(fields, [(5,5)])
+
+
+class TestFieldsInDirection(unittest.TestCase):
+    def TestFields(self, posLeftUpper, dir, output, tolerance = 20):
+        fieldsvec = utils.FieldsInDirection(Vector2D(*posLeftUpper), utils.DirToVec[dir], tolerance)
+        fieldstup = set(map(lambda fv: fv.to_tuple(), fieldsvec))
+        self.assertEqual(fieldstup, set(output))        
+    
+    def test_UpOne(self):
+        self.TestFields((100, 100), 'U', [(1,0)])
+
+    def test_UpTwoLeft(self):
+        self.TestFields((50, 100), 'U', [(0,0), (1,0)])
+
+    def test_DownOne(self):
+        self.TestFields((100, 100), 'D', [(1,2)])
+
+    def test_DownTwoLeft(self):
+        self.TestFields((50, 100), 'D', [(0,2), (1,2)])
+        
+    def test_LeftOne(self):
+        self.TestFields((100, 100), 'L', [(0,1)])
+
+    def test_LeftTwoUp(self):
+        self.TestFields((100, 50), 'L', [(0,1), (0,0)])
+
+        
         
 if __name__ == '__main__': 
     unittest.main()
