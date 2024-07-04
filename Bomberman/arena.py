@@ -229,10 +229,19 @@ class Arena:
         fNew = self.GetField(fpNew) 
         if fpOld == fpNew:
             return (NewPos, fOld, False)                   
-        return (NewPos, fNew, True) if fNew.CanVisit() else (FieldBoundary(OldPos, NewPos), fOld)
+        return (NewPos, fNew, True) if fNew.CanVisit() else (FieldBoundary(OldPos, NewPos), fOld, False)
 
-    def CanGo(self, pos:Vector2D, dir:Vector2D, step:int):
-        pass
+    def CanGo(self, OldPos:Vector2D, dir:Vector2D, step:int):
+        NewPos = OldPos + dir*step
+        fpOld = BestField(OldPos)
+        fpNew = BestField(NewPos)
+        fOld = self.GetField(fpOld)
+        fNew = self.GetField(fpNew) 
+        if fpOld == fpNew:
+            return (NewPos, fOld, None)  
+        fieldposes = FieldsInDirection(OldPos, dir, self.m_FieldTolerance)
+        CanVisitAll = min(map(lambda fpos:self.GetField(fpos).CanVisit(), fieldposes))
+        return (NewPos, fNew, True) if CanVisitAll else (FieldBoundary(OldPos, NewPos), fOld, False)           
             
     def MovePlayer(self, player, OldPos:Vector2D, lastdir, step, keys):
         # find dir that the player will move 

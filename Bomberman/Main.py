@@ -75,12 +75,16 @@ appcfg = {
         "field_tolerance" : 0.10,   
         "map" : {
             "data" : [
-            "WWWWWWWW",
-            "W      W",
-            "W    w W",
-            "W w    W",
-            "W      W",
-            "WWWWWWWW",
+            "WWWWWWWWWWWW",
+            "W          W",
+            "W          W",
+            "W  wwwww w W",
+            "W  w   w w W",
+            "W      w w W",
+            "W      www W",
+            "W          W",
+            "W          W",
+            "WWWWWWWWWWWW",
             ],
             "players" : [(1,1),(4,4)]               
         }
