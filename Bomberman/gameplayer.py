@@ -1,3 +1,4 @@
+import copy
 from enum import Enum
 import utils
 import sprites
@@ -51,9 +52,8 @@ class Player:
         (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Step, self.m_CurrentKeys)
            
     def OnFire(self):
-        if self.m_Status == Player.Status.Normal:
-            self.m_Status = Player.Status.Dying
-            
+         if self.m_Status == Player.Status.Normal:
+            self.m_Status = Player.Status.Dying   
 
     def DeployBomb(self):
         if self.m_Status != Player.Status.Normal:
@@ -61,7 +61,7 @@ class Player:
         pos = self.Position()
         pos = BestField(pos)*100
         self.m_BombCfg.SetPosition(pos)
-        self.m_Arena.AddBomb(self.m_BombCfg)        
+        self.m_Arena.AddBomb(copy.deepcopy(self.m_BombCfg))        
 
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:
@@ -78,6 +78,8 @@ class Player:
         if self.m_Status == Player.Status.Dying:
             if self.m_WaitTime == 0:
                 self.m_Status = Player.Status.Dead;
+                self.m_Status = Player.Status.Normal;
+                self.m_WaitTime = self.m_DeadAnimation.TotalTicks()
             self.m_WaitTime -= 1
             self.m_DeadAnimation.Update()
             return

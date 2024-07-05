@@ -17,6 +17,9 @@ class Vector2D:
 
     def __repr__(self):
         return f'(V({self.x},{self.y}))'
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
 
     def dot(self, other):
         if not isinstance(other, Vector2D):
@@ -42,6 +45,9 @@ class Vector2D:
                 return
             else:
                 raise Error('Invalid index')
+            
+    def __eq__(self, other):
+        return (self.x, self.y) == (other.x, other.y)
 
     def __sub__(self, other):
         """Vector subtraction."""

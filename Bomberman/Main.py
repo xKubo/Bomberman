@@ -74,16 +74,18 @@ appcfg = {
         ],
         "field_tolerance" : 0.10,   
         "map" : {
+            "random_walls" : 2,  # 0 - off, 
+            # n - No wall, w - temporary wall, W - permanent wall
             "data" : [
             "WWWWWWWWWWWW",
             "W          W",
-            "W          W",
+            "W  w w w w W",
             "W  wwwww w W",
             "W  w   w w W",
             "W      w w W",
             "W      www W",
-            "W          W",
-            "W          W",
+            "WnnnnnnnnnnW",
+            "WnnnnnnnnnnW",
             "WWWWWWWWWWWW",
             ],
             "players" : [(1,1),(4,4)]               

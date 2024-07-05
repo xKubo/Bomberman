@@ -32,9 +32,13 @@ class BombCfg:
         self.m_Position = Vector2D(0,0)
         self.m_BombTime = cfg["bomb_time"]
         self.m_FlameSize = cfg["flame_size"]
+        self.m_ID = 0
         
     def SetPosition(self, pos:Vector2D):
         self.m_Position = pos
+
+    def SetID(self, id):
+        self.m_ID = id
 
     def Position(self):
         return self.m_Position
@@ -44,6 +48,9 @@ class BombCfg:
     
     def FlameSize(self):
         return self.m_FlameSize
+
+    def ID(self):
+        return self.m_ID
     
 class SearchResult(Enum):
     Continue = 0,
@@ -64,6 +71,9 @@ class Bomb:
         self.m_Cfg = cfg
         self.m_Arena:Arena = arena
         self.m_Status = Bomb.Status.Ticking
+        
+    def __str__(self):
+        return f'B:#={self.m_Cfg.ID()}, Pos={self.m_Position}, WaitTime={self.m_WaitTime}, S={self.m_Status}'
 
     def Explode(self) :
         if self.m_Status != Bomb.Status.Ticking:
@@ -157,6 +167,36 @@ class Wall:
         return self.m_Status == Wall.Status.Destroyed 
 
 class Arena:
+    
+    class NoField:
+        def __init__(self, pos):
+            self.m_Position = pos
+
+        def __str__(self):
+            return f'F:Pos={self.m_Position}, NOFIELD'
+    
+        def AddObject(self, obj):
+            pass
+            
+        def DelObject(self, obj):
+            pass
+                
+            
+        def Type(self):
+            return 'W'
+        
+        def CanVisit(self):
+            return False
+        
+        def Position(self):
+            return self.m_Position
+        
+        def SetType(self, NewType):
+            pass
+
+        def SetOnFire(self, OnOff):
+            pass
+            
 
     class Field:
         def __init__(self, type, pos):
@@ -164,6 +204,9 @@ class Arena:
             self.m_Objects = []
             self.m_FireCount = 0  
             self.m_Position = pos
+
+        def __str__(self):
+            return f'F:Pos={self.m_Position}, F={self.m_FireCount}, T={self.Type()}, CanVisit={self.CanVisit()}'
 
         def AddObject(self, obj):
             self.m_Objects.append(obj)
@@ -198,6 +241,7 @@ class Arena:
         self.m_Fields = []        
         self.m_Width = self.m_Map.width()
         self.m_Height = self.m_Map.height()
+        self.m_BombCounter = 1
         self.m_FieldTolerance = field_tolerance
         d = self.m_Map.data()
         walls = []
@@ -221,24 +265,13 @@ class Arena:
         for fpos in fNew - fOld:
             f = self.GetField(fpos)
             f.AddObject(obj)   
-            
-    def _CanGo(self, OldPos:Vector2D, NewPos:Vector2D):
-        fpOld = BestField(OldPos)
-        fpNew = BestField(NewPos)
-        fOld = self.GetField(fpOld)
-        fNew = self.GetField(fpNew) 
-        if fpOld == fpNew:
-            return (NewPos, fOld, False)                   
-        return (NewPos, fNew, True) if fNew.CanVisit() else (FieldBoundary(OldPos, NewPos), fOld, False)
 
     def CanGo(self, OldPos:Vector2D, dir:Vector2D, step:int):
         NewPos = OldPos + dir*step
         fpOld = BestField(OldPos)
         fpNew = BestField(NewPos)
         fOld = self.GetField(fpOld)
-        fNew = self.GetField(fpNew) 
-        if fpOld == fpNew:
-            return (NewPos, fOld, None)  
+        fNew = self.GetField(fpNew)         
         fieldposes = FieldsInDirection(OldPos, dir, self.m_FieldTolerance)
         CanVisitAll = min(map(lambda fpos:self.GetField(fpos).CanVisit(), fieldposes))
         return (NewPos, fNew, True) if CanVisitAll else (FieldBoundary(OldPos, NewPos), fOld, False)           
@@ -247,11 +280,18 @@ class Arena:
         # find dir that the player will move 
         dir = ComputeNewDir(lastdir, keys, lambda d: self.CanGo(OldPos, DirToVec[d], 100)[2])
         (UpdatedPos, f, cango) = self.CanGo(OldPos, DirToVec[dir], step)
-        print(f"M:{OldPos}->{UpdatedPos}: Field:{f.Position()}, CanVisit:{f.CanVisit()}, Type:{f.Type()}")
+        print(f"M:{OldPos}->{UpdatedPos}: Field:{f}")
         if f.Type() == 'f':
             self.OnFire(player)
         self.MoveObject(player, OldPos, UpdatedPos)
         return (UpdatedPos, dir)
+    
+    def InArena(self, pos:Vector2D):
+        if pos.x < 0 or pos.x >= self.m_Width:
+            return False
+        if pos.y < 0 or pos.y >= self.m_Height:
+            return False
+        return True
 
     def GetExtents(self):
         return (self.m_Width, self.m_Height)
@@ -259,7 +299,9 @@ class Arena:
     def GetFields(self):
         return self.m_Fields
 
-    def GetField(self, field:Vector2D) -> Field :
+    def GetField(self, field:Vector2D) -> Field :   
+        if not self.InArena(field):
+            return Arena.NoField(field)
         return self.m_Fields[field.y*self.m_Width + field.x]
     
     def GetFieldByPos(self, pos:Vector2D) -> Field:
@@ -311,7 +353,9 @@ class Arena:
         for dv in DirToVec.values():
             cnt = self._FindFirePointsInDir(bomb, dv, self._HandleFirePoint)  
             counts.append(cnt)
-        print('FindFire:', bomb.Position(), ' Points: ', counts, " FlameSize: ", bomb.FlameSize())     
+        print('FindFire:', bomb.Position(), ' Points: ', counts, " FlameSize: ", bomb.FlameSize())
+        for b in self.m_Bombs:
+            print(b)
         return {"counts": counts, "pos":bomb.Position(), "size":bomb.FlameSize()}
             
     def _SetFireFields(self, fire, OnOff):
@@ -330,9 +374,12 @@ class Arena:
     def ShowFlames(self, fire):
         self._SetFireFields(fire, True)            
 
-    def AddBomb(self, cfg):        
+    def AddBomb(self, cfg):    
+        cfg.SetID(self.m_BombCounter) 
+        self.m_BombCounter += 1
         b = Bomb(self, cfg, self.m_Sprites.CreateFieldAnimation('b'), self.m_Sprites.CreateCrossAnimation())
         pos = b.Position()
+        print(f'AddBomb:{pos}')
         f = self.GetFieldByPos(b.Position()) 
         if f.Type() != ' ':
             return      # can add bomb only on free space
