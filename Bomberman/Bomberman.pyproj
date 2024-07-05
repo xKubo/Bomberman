@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="arena.py" />
-    <Compile Include="Bomberman.py" />
     <Compile Include="commands.py" />
     <Compile Include="configuration.py" />
     <Compile Include="diag.py" />
