@@ -83,12 +83,12 @@ appcfg = {
             "W  wwwww w W",
             "W  w   w w W",
             "W      w w W",
-            "W      www W",
-            "WnnnnnnnnnnW",
-            "WnnnnnnnnnnW",
+            "Wnnnnnnwww W",
+            "WnwnwnnnnnnW",
+            "WnwwwnnnnnnW",
             "WWWWWWWWWWWW",
             ],
-            "players" : [(1,1),(4,4)]               
+            "players" : [(1,1),(3,6)]               
         }
     }
 }

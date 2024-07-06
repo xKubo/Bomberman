@@ -113,7 +113,7 @@ class Game:
         self.m_Arena.Draw(scr)
 
 
-        t.SetPos(Vector2D(140, 0))
+        t.SetPos(Vector2D(self.m_Map.width()*24, 0))
         for p in self.GetPlayers():
             pos = p.Position()           
             neighbors = list(utils.NeighboringFields(pos,self.m_FieldTolerance))            

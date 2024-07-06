@@ -239,7 +239,7 @@ class Arena:
         self.m_Walls = []
         self.m_Map = map
         self.m_Fields = []        
-        self.m_Width = self.m_Map.width()
+        self.m_Width = self.m_Map. width()
         self.m_Height = self.m_Map.height()
         self.m_BombCounter = 1
         self.m_FieldTolerance = field_tolerance
@@ -264,28 +264,18 @@ class Arena:
             f.DelObject(obj)
         for fpos in fNew - fOld:
             f = self.GetField(fpos)
-            f.AddObject(obj)   
-
-    def CanGo(self, OldPos:Vector2D, dir:Vector2D, step:int):
-        NewPos = OldPos + dir*step
-        fpOld = BestField(OldPos)
-        fpNew = BestField(NewPos)
-        fOld = self.GetField(fpOld)
-        fNew = self.GetField(fpNew)         
-        fieldposes = FieldsInDirection(OldPos, dir, self.m_FieldTolerance)
-        CanVisitAll = min(map(lambda fpos:self.GetField(fpos).CanVisit(), fieldposes))
-        return (NewPos, fNew, True) if CanVisitAll else (FieldBoundary(OldPos, NewPos), fOld, False)           
+            f.AddObject(obj)           
             
     def MovePlayer(self, player, OldPos:Vector2D, lastdir, step, keys):
         # find dir that the player will move 
-        dir = ComputeNewDir(lastdir, keys, lambda d: self.CanGo(OldPos, DirToVec[d], 100)[2])
-        (UpdatedPos, f, cango) = self.CanGo(OldPos, DirToVec[dir], step)
+        dir = ComputeNewDir(lastdir, keys, lambda d: CanGo(self, OldPos, DirToVec[d], 100, self.m_FieldTolerance)[2])
+        (UpdatedPos, f, cango) = CanGo(self, OldPos, DirToVec[dir], step, self.m_FieldTolerance)
         print(f"M:{OldPos}->{UpdatedPos}: Field:{f}")
         if f.Type() == 'f':
             self.OnFire(player)
         self.MoveObject(player, OldPos, UpdatedPos)
         return (UpdatedPos, dir)
-    
+     
     def InArena(self, pos:Vector2D):
         if pos.x < 0 or pos.x >= self.m_Width:
             return False

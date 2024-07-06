@@ -56,6 +56,9 @@ def FieldsInDirection(posLeftUpper:Vector2D, dv:Vector2D, field_tolerance:int):
 
 def FieldBoundary(OldPos:Vector2D, NewPos:Vector2D):
     d = NewPos - OldPos
+    if (NewPos//100 == OldPos//100):
+        return NewPos
+
 
     for i in range(2):
         q = OldPos[i]//100
@@ -92,4 +95,17 @@ def ParseTimeLineCfg(cfg):
 def UpdateTimeToTicks(cfg, Keys, TickMS:int):
     for k in Keys:
         cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
+
+
+def CanGo(fields, OldPos:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
+    NewPos = OldPos + dir*step
+    fpOld = OldPos//100
+    fpNew = NewPos//100
+    fOld = fields.GetField(fpOld)
+    fNew = fields.GetField(fpNew)         
+    fieldposes = FieldsInDirection(OldPos, dir, FieldTolerance)
+        
+    CanVisitAll = min(map(lambda fpos:fields.GetField(fpos).CanVisit(), fieldposes))
+    print(f"C:{fieldposes} : CanVisitAll={CanVisitAll}")
+    return (NewPos, fNew, True) if CanVisitAll else (FieldBoundary(OldPos, NewPos), fOld, False)   
     
