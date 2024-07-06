@@ -97,15 +97,24 @@ def UpdateTimeToTicks(cfg, Keys, TickMS:int):
         cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
 
 
-def CanGo(fields, OldPos:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
-    NewPos = OldPos + dir*step
-    fpOld = OldPos//100
-    fpNew = NewPos//100
-    fOld = fields.GetField(fpOld)
-    fNew = fields.GetField(fpNew)         
-    fieldposes = FieldsInDirection(OldPos, dir, FieldTolerance)
-        
+def CanGo(fields, OldPosLU:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
+    NewPosLU = OldPosLU + dir*step
+    fNew = fields.GetFieldByPos(NewPosLU) 
+    fOld = fields.GetFieldByPos(OldPosLU) 
+
+    OldPos = OldPosLU + MiddleOfTheField
+    NewPos = NewPosLU + MiddleOfTheField
+    middle = OldPos//100*100 + MiddleOfTheField
+    posvec = NewPos - middle
+    if posvec.dot(dir) <= FieldTolerance:
+        return (NewPos - MiddleOfTheField, fNew, True)    
+    fieldposes = FieldsInDirection(OldPosLU, dir, FieldTolerance)        
     CanVisitAll = min(map(lambda fpos:fields.GetField(fpos).CanVisit(), fieldposes))
-    print(f"C:{fieldposes} : CanVisitAll={CanVisitAll}")
-    return (NewPos, fNew, True) if CanVisitAll else (FieldBoundary(OldPos, NewPos), fOld, False)   
+    
+    CanVisitResult = (NewPos - MiddleOfTheField, fNew, True)
+    CannotVisitResult = (middle + dir*FieldTolerance - MiddleOfTheField, fOld, False)
+   # print(f"D:{dir}, O:{OldPos}:{fOld}, N:{NewPos}:{fNew}, FPos:{fieldposes} CanVisit:{CanVisitAll} CanV:{CanVisitResult}, CannotV:{CannotVisitResult}")
+    if CanVisitAll:
+        return CanVisitResult
+    return CannotVisitResult
     
