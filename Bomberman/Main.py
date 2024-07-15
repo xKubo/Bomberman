@@ -60,11 +60,23 @@ appcfg = {
             "bomb_time" : "2s",
             "flame_size" : 3,
         },
+        #default bonuses values
+        "bonuses" : {
+            "step" : 0.25,   # quarter of field
+            "speed" : 1,
+            "bomb_time" : "2s",
+            "bomb_count" : 100,
+            "flame_size" : 3,
+            "reversed_controls" : False,            
+        },
         "players" : [
             {
                 "name" : "P1",
                 "type" : "key",
-                "keys" : ['w', 'a', 's', 'd', '1']
+                "keys" : ['w', 'a', 's', 'd', '1'],
+                "bonuses" : {       # player-specific overrides
+                    "speed" : 1.5,
+                    },
             },
             {
                 "name" : "P2",
@@ -72,8 +84,9 @@ appcfg = {
                 "keys" : ['up', 'left', 'down', 'right', 'p']
             },
         ],
-        "field_tolerance" : 0.10,   
+        "field_tolerance" : 0.20,   
         "map" : {
+            "pillars" : 1,
             "random_walls" : 2,  # 0 - off, 
             # n - No wall, w - temporary wall, W - permanent wall
             "data" : [
@@ -82,7 +95,7 @@ appcfg = {
             "W  w w w w W",
             "W  wwwww w W",
             "W  w   w w W",
-            "W      w w W",
+            "W nnn  w w W",
             "Wnnnnnnwww W",
             "WnwnwnnnnnnW",
             "WnwwwnnnnnnW",

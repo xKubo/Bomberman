@@ -1,10 +1,9 @@
 import copy
 from enum import Enum
-import utils
 import sprites
 from Vec2d import Vector2D
 
-from utils import BestField, DirToVec
+from utils import BestField, DirToVec, MiddleOfTheField
 from arena import Arena, BombCfg, EmptyDir, Dirs
 
 class Player:      
@@ -19,7 +18,7 @@ class Player:
         self.m_Sprites = {}
         self.m_Cfg = cfg
         p = self.m_Cfg["position"]
-        self.m_Position = Vector2D(*p) * 100
+        self.m_Position = Vector2D(*p) * 100 + MiddleOfTheField
         self.m_Step = int(100*self.m_Cfg["step"])
         self.m_Game = game
         self.m_Status:Player.Status = Player.Status.Normal
@@ -91,9 +90,9 @@ class Player:
         if self.m_Status == Player.Status.Dead:
             return   
         if self.m_Status == Player.Status.Dying:
-            self.m_DeadAnimation.Draw(scr, self.Position())
+            self.m_DeadAnimation.Draw(scr, self.Position() - MiddleOfTheField)
             return
-        self.m_Sprites[self.m_Direction].Draw(scr, self.Position())
+        self.m_Sprites[self.m_Direction].Draw(scr, self.Position() - MiddleOfTheField)
         
        
     

@@ -11,15 +11,22 @@ class Map:
         self.m_Height = len(d)
         self.m_Width = len(d[0])
         self.m_Positions = cfg["players"]
+        self.m_Pillars = cfg["pillars"]
         self.m_Data = []
         
         for line in d:
             self.m_Data += line
 
+        if cfg["pillars"]:
+            for y in range(2, self.m_Height-2, 2):
+                for x in range(2, self.m_Width-2, 2):
+                    self.m_Data[y*self.m_Width + x] = 'W'                
+
         self._GenRandomWalls(cfg["random_walls"])    
         
         for p in self.m_Positions:
             pv = Vector2D(*p)
+
             fields = self._FieldsNearPlayer(pv)
             for f in fields:                
                 idx = f[0] + self.m_Width*f[1]

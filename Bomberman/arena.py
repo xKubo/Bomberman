@@ -5,6 +5,7 @@ from gamemap import Map
 from Vec2d import Vector2D
 from utils import *
 from diag import Log
+from bonuses import ArenaBonuses
 
 EmptyDir = ' '
 Dirs = 'LURD'
@@ -242,6 +243,7 @@ class Arena:
         self.m_Width = self.m_Map. width()
         self.m_Height = self.m_Map.height()
         self.m_BombCounter = 1
+        self.m_Bonuses = ArenaBonuses({})
         self.m_FieldTolerance = field_tolerance
         d = self.m_Map.data()
         walls = []
@@ -305,6 +307,7 @@ class Arena:
         return f.CanVisit()        
     
     def RegPlayer(self, player, pos:Vector2D):
+        self.m_Bonuses.AddPlayer(player)
         fps = NeighboringFields(pos, self.m_FieldTolerance)
         for fp in fps:
             f = self.GetField(fp)

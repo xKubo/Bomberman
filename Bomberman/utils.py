@@ -9,9 +9,12 @@ DirToVec = {
     'D' : Vector2D(0, 1),    
     }
 
+
+MiddleOfTheField = Vector2D(50, 50)
+
 #pick one field from 4 possible ones           
 def BestField(posUpperLeft:Vector2D):
-    return Vector2D((posUpperLeft.x+50)//100, (posUpperLeft.y+50)//100)
+    return Vector2D(posUpperLeft.x//100, posUpperLeft.y//100)
     
 Table = [
     [(0,0)],
@@ -23,12 +26,10 @@ Table = [
 def sign(x):
     return 1 if x>=0 else -1
 
-MiddleOfTheField = Vector2D(50, 50)
 
 # return neighboring fields
-def NeighboringFields(posUpperLeft:Vector2D, tolerance:int) -> set: 
-    pos = posUpperLeft + MiddleOfTheField  # position of the center 
-    f = BestField(posUpperLeft)
+def NeighboringFields(pos:Vector2D, tolerance:int) -> set: 
+    f = BestField(pos)
     xOff = pos.x%100 - 50   # distance from center point
     yOff = pos.y%100 - 50
     xAbs = abs(xOff) > tolerance  # is within tolerance? 
@@ -38,13 +39,12 @@ def NeighboringFields(posUpperLeft:Vector2D, tolerance:int) -> set:
 
 
 
-def FieldsInDirection(posLeftUpper:Vector2D, dv:Vector2D, field_tolerance:int):
-    pos = posLeftUpper + MiddleOfTheField
+def FieldsInDirection(pos:Vector2D, dv:Vector2D, field_tolerance:int):
     if dv.x == 0:       
         n = Vector2D(1,0)
     else:
         n = Vector2D(0,1)
-    f = BestField(posLeftUpper)
+    f = BestField(pos)
     m = f * 100 + MiddleOfTheField  #middlepoint
     dist = pos[n[1]]-m[n[1]]
     res = f + dv
@@ -52,21 +52,6 @@ def FieldsInDirection(posLeftUpper:Vector2D, dv:Vector2D, field_tolerance:int):
         return [res]
     else:
         return [res, res+n if dist>0 else res-n]            
-     
-
-def FieldBoundary(OldPos:Vector2D, NewPos:Vector2D):
-    d = NewPos - OldPos
-    if (NewPos//100 == OldPos//100):
-        return NewPos
-
-
-    for i in range(2):
-        q = OldPos[i]//100
-        if d[i] > 0:
-            NewPos[i] = q*100 + 99
-        elif d[i] < 0:
-            NewPos[i] = q*100
-    return NewPos
 
 def ParseTimeToMS(TimeStr:str):
     if TimeStr.endswith('ms'):
@@ -97,23 +82,20 @@ def UpdateTimeToTicks(cfg, Keys, TickMS:int):
         cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
 
 
-def CanGo(fields, OldPosLU:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
-    NewPosLU = OldPosLU + dir*step
-    fNew = fields.GetFieldByPos(NewPosLU) 
-    fOld = fields.GetFieldByPos(OldPosLU) 
-
-    OldPos = OldPosLU + MiddleOfTheField
-    NewPos = NewPosLU + MiddleOfTheField
+def CanGo(fields, OldPos:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
+    NewPos = OldPos + dir*step
+    fNew = fields.GetFieldByPos(NewPos) 
+    fOld = fields.GetFieldByPos(OldPos) 
     middle = OldPos//100*100 + MiddleOfTheField
     posvec = NewPos - middle
-    if posvec.dot(dir) <= FieldTolerance:
-        return (NewPos - MiddleOfTheField, fNew, True)    
-    fieldposes = FieldsInDirection(OldPosLU, dir, FieldTolerance)        
+    if posvec.dot(dir) < FieldTolerance:
+        return (NewPos, fNew, True)    
+    fieldposes = FieldsInDirection(OldPos, dir, FieldTolerance)        
     CanVisitAll = min(map(lambda fpos:fields.GetField(fpos).CanVisit(), fieldposes))
     
-    CanVisitResult = (NewPos - MiddleOfTheField, fNew, True)
-    CannotVisitResult = (middle + dir*FieldTolerance - MiddleOfTheField, fOld, False)
-   # print(f"D:{dir}, O:{OldPos}:{fOld}, N:{NewPos}:{fNew}, FPos:{fieldposes} CanVisit:{CanVisitAll} CanV:{CanVisitResult}, CannotV:{CannotVisitResult}")
+    CanVisitResult = (NewPos, fNew, True)
+    CannotVisitResult = (middle + dir*FieldTolerance, fOld, False)
+    print(f"D:{dir}, O:{OldPos}, N:{NewPos}, FPos:{fieldposes} CanVisit:{CanVisitAll} CanV:{CanVisitResult[0]},{CanVisitResult[2]}, CannotV:{CannotVisitResult[0]},{CannotVisitResult[2]}")
     if CanVisitAll:
         return CanVisitResult
     return CannotVisitResult
