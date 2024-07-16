@@ -14,15 +14,15 @@ class TestNeighboringFields(unittest.TestCase):
         self.assertEqual(s1, s2)
 
     def test_OneExactPosition(self):
-        fields = self.NFields((0,0))
+        fields = self.NFields((50,50))
         self.CheckFields(fields, [(0,0)])
         
     def test_TwoFields(self):
-        fields = self.NFields((25,0))
+        fields = self.NFields((75,50))
         self.CheckFields(fields, [(0,0), (0,1)])
         
     def test_FourFields(self):
-        fields = self.NFields((25,25))
+        fields = self.NFields((75,75))
         self.CheckFields(fields, [(0,0), (1,0), (0,1), (1,1)])
         
     def test_FourFieldsLeftUpperQuadrant(self):
@@ -30,7 +30,7 @@ class TestNeighboringFields(unittest.TestCase):
         self.CheckFields(fields, [(5,5), (4,5), (5,4), (4,4)])
         
     def test_FourFieldsLeftUpperQuadrantInTolerance(self):
-        fields = self.NFields((485,485))  # best field is [5,5]
+        fields = self.NFields((535,535))  # best field is [5,5]
         self.CheckFields(fields, [(5,5)])
 
 
