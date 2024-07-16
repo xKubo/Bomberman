@@ -35,28 +35,28 @@ class TestNeighboringFields(unittest.TestCase):
 
 
 class TestFieldsInDirection(unittest.TestCase):
-    def TestFields(self, posLeftUpper, dir, output, tolerance = 20):
-        fieldsvec = utils.FieldsInDirection(Vector2D(*posLeftUpper), utils.DirToVec[dir], tolerance)
+    def TestFields(self, posMiddle, dir, output, tolerance = 20):
+        fieldsvec = utils.FieldsInDirection(Vector2D(*posMiddle), utils.DirToVec[dir], tolerance)
         fieldstup = set(map(lambda fv: fv.to_tuple(), fieldsvec))
         self.assertEqual(fieldstup, set(output))        
     
     def test_UpOne(self):
-        self.TestFields((100, 100), 'U', [(1,0)])
+        self.TestFields((150, 150), 'U', [(1,0)])
 
     def test_UpTwoLeft(self):
-        self.TestFields((50, 100), 'U', [(0,0), (1,0)])
+        self.TestFields((100, 150), 'U', [(0,0), (1,0)])
 
     def test_DownOne(self):
-        self.TestFields((100, 100), 'D', [(1,2)])
+        self.TestFields((150, 150), 'D', [(1,2)])
 
     def test_DownTwoLeft(self):
-        self.TestFields((50, 100), 'D', [(0,2), (1,2)])
+        self.TestFields((100, 150), 'D', [(0,2), (1,2)])
         
     def test_LeftOne(self):
-        self.TestFields((100, 100), 'L', [(0,1)])
+        self.TestFields((150, 150), 'L', [(0,1)])
 
     def test_LeftTwoUp(self):
-        self.TestFields((100, 50), 'L', [(0,1), (0,0)])
+        self.TestFields((150, 100), 'L', [(0,1), (0,0)])
 
         
         

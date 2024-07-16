@@ -1,4 +1,4 @@
-from gameplayer import ComputeNewDir, EmptyDir
+from arena import ComputeNewDir, EmptyDir
 import unittest
 
 def CanGo(CanGoValues):
