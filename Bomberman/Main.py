@@ -54,20 +54,28 @@ appcfg = {
     "images" : configuration.Images,
     "text" : configuration.Text,
     "game" : {
-        "diag" : True,
-        "player_defaults" : {
-            "step" : 0.25,   # quarter of field
-            "bomb_time" : "2s",
-            "flame_size" : 3,
-        },
+        #"diag" : True,
+        # "player_defaults" : {
+        #     "step" : 0.25,   # quarter of field
+        #     "bomb_time" : "2s",
+        #     "flame_size" : 3,
+        # },
         #default bonuses values
         "bonuses" : {
-            "step" : 0.25,   # quarter of field
-            "speed" : 1,
-            "bomb_time" : "2s",
-            "bomb_count" : 100,
-            "flame_size" : 3,
-            "reversed_controls" : False,            
+            "defaults" : {
+                "step" : 0.25,   # quarter of field
+                "speed" : 1,
+                "bomb_time" : "2s",
+                "bomb_count" : 100,
+                "flame_size" : 3,
+                "reversed_controls" : False,                            
+            },
+            "generation" : {
+               "max_flame" : {"p":1},
+               "flame" : {"p":10}, 
+               "bomb" : {"p":10}
+               
+                },
         },
         "players" : [
             {

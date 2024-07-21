@@ -1,6 +1,7 @@
 import copy
 from enum import Enum
 import sprites
+from bonuses import PlayerBonuses
 from Vec2d import Vector2D
 
 from utils import BestField, DirToVec, MiddleOfTheField
@@ -17,16 +18,16 @@ class Player:
         self.m_Direction = 'R'
         self.m_Sprites = {}
         self.m_Cfg = cfg
+        self.m_ActiveBombCount = 0
         p = self.m_Cfg["position"]
         self.m_Position = Vector2D(*p) * 100 + MiddleOfTheField
-        self.m_Step = int(100*self.m_Cfg["step"])
+        self.m_Bonuses = PlayerBonuses(self.m_Cfg["bonuses"])
         self.m_Game = game
         self.m_Status:Player.Status = Player.Status.Normal
         self.m_Name = self.m_Cfg["name"]
         self.m_Arena: Arena = game.Arena()
         self.m_Arena.RegPlayer(self, self.m_Position)
         self.m_CurrentKeys = ""
-        self.m_BombCfg = BombCfg(cfg)
         self.m_DeadAnimation = self.m_Game.GetAnimation('X')
         self.m_WaitTime = self.m_DeadAnimation.TotalTicks()
         for d in DirToVec.keys():
@@ -59,8 +60,12 @@ class Player:
             return;
         pos = self.Position()
         pos = BestField(pos)*100
-        self.m_BombCfg.SetPosition(pos)
-        self.m_Arena.AddBomb(copy.deepcopy(self.m_BombCfg))        
+        if (self.m_ActiveBombCount < self.m_Bonuses.MaxActiveBombCount()):
+            self.m_ActiveBombCount += 1
+            self.m_Arena.AddBomb(self, pos, self.m_Bonuses.BombConfiguration())        
+
+    def OnBombExploded(self):
+        self.m_ActiveBombCount -= 1
 
     def OnCmd(self, cmd):
         if cmd!= self.m_CurrentKeys:

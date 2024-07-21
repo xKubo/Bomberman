@@ -1,3 +1,4 @@
+from dataclasses import fields
 from screen import Screen
 import text
 import utils
@@ -135,18 +136,13 @@ class Sprites:
         self.m_TickMS = 1000//fps
         self.m_Cfg = cfg   
         self.m_Text = text.Text(textcfg)
-        self.m_Image = pygame.image.load(self.m_Cfg["name"]).convert_alpha()
-        self.m_FieldSize = self.m_Cfg["fieldsize"]
-        sf = self.m_Cfg["scale_factor"]
-        if sf != 1:
-            self.m_Image = pygame.transform.scale_by(self.m_Image, sf)
-            self.m_FieldSize *= sf
-            
-        self.m_Image.set_colorkey(self.m_Cfg["transparent_color"]) 
-        
         self.m_Fields = {}
-        for k, v in self.m_Cfg["fields"].items():
-            self.m_Fields[k] = self._GenSprites(v)
+        for name, cfg in cfg["images"].items():            
+            img = self._GenerateFieldsFromImage(cfg)
+            if not name:
+                self.m_Image = img
+                self.m_FieldSize = cfg["fieldsize"]*cfg["scale_factor"]
+
         self.m_TimelineData = {}
         for keys, v in self.m_Cfg["animations"].items():
             for c in keys:
@@ -154,6 +150,22 @@ class Sprites:
                 cfg["tick_ms"] = self.m_TickMS
                 self.m_TimelineData[c] = cfg
         self.m_FireCross = FireCross(self.m_Cfg["cross"], self.m_Image, self.m_FieldSize)
+        
+    def _GenerateFieldsFromImage(self, cfg):
+        img = pygame.image.load(cfg["name"]).convert_alpha()
+        fieldsize = cfg["fieldsize"]
+        sf = cfg["scale_factor"]
+        if sf != 1:
+            img = pygame.transform.scale_by(img, sf)
+            fieldsize *= sf
+            
+        color_key= cfg.get("transparent_color")
+        if color_key is not None:
+            img.set_colorkey(color_key) 
+        
+        for k, v in cfg["fields"].items():
+            self.m_Fields[k] = self._GenSprites(v, fieldsize, img)
+
         
     def TickMS(self):
         return self.m_TickMS
@@ -164,10 +176,10 @@ class Sprites:
     def GetStaticSprite(self, field):
         return self.m_Fields[field][0]
     
-    def _GenSprites(self, field):
+    def _GenSprites(self, field, fieldsize, img):
         sprites = []
         for i in range(field[2]):
-            sprites.append(StaticSprite(RectFromField(field, i, self.m_FieldSize), self.m_Image))
+            sprites.append(StaticSprite(RectFromField(field, i, fieldsize), img))
         return sprites
 
     def CreateFieldAnimation(self,fieldname):

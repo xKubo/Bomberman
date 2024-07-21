@@ -5,7 +5,7 @@ from gamemap import Map
 from Vec2d import Vector2D
 from utils import *
 from diag import Log
-from bonuses import ArenaBonuses
+from bonuses import ArenaBonuses,BombCfg
 
 EmptyDir = ' '
 Dirs = 'LURD'
@@ -28,31 +28,6 @@ def ComputeNewDir(LastDir, NewChars, CanGo):
             return o
     return LastDir
 
-class BombCfg:
-    def __init__(self, cfg):
-        self.m_Position = Vector2D(0,0)
-        self.m_BombTime = cfg["bomb_time"]
-        self.m_FlameSize = cfg["flame_size"]
-        self.m_ID = 0
-        
-    def SetPosition(self, pos:Vector2D):
-        self.m_Position = pos
-
-    def SetID(self, id):
-        self.m_ID = id
-
-    def Position(self):
-        return self.m_Position
-    
-    def BombTime(self):
-        return self.m_BombTime
-    
-    def FlameSize(self):
-        return self.m_FlameSize
-
-    def ID(self):
-        return self.m_ID
-    
 class SearchResult(Enum):
     Continue = 0,
     Stop = 1,
@@ -64,7 +39,8 @@ class Bomb:
         Exploding = 1,
         Exploded = 2,
 
-    def __init__(self, arena, cfg:BombCfg, bombAnimation, firecrossAnimation):
+    def __init__(self, arena, player, cfg:BombCfg, bombAnimation, firecrossAnimation):
+        self.m_Player = player
         self.m_Position = cfg.Position()
         self.m_BombAnimation = bombAnimation
         self.m_CrossAnimation = firecrossAnimation        
@@ -110,6 +86,7 @@ class Bomb:
             else:
                 self.m_Arena.HideFlames(self.m_Fire)
                 self.m_Status = Bomb.Status.Exploded
+                self.m_Player.OnBombExploded()
         else: 
             pass
   
@@ -205,6 +182,7 @@ class Arena:
             self.m_Objects = []
             self.m_FireCount = 0  
             self.m_Position = pos
+            self.m_Bonus = None
 
         def __str__(self):
             return f'F:Pos={self.m_Position}, F={self.m_FireCount}, T={self.Type()}, CanVisit={self.CanVisit()}'
@@ -225,25 +203,32 @@ class Arena:
         def Position(self):
             return self.m_Position
         
+        def HasBonus(self):
+            return self.m_Bonus
+
+        def SetBonus(self, bonus):
+            self.m_Bonus = bonus
+        
         def SetType(self, NewType):
             self.m_Type = NewType
 
         def SetOnFire(self, OnOff):
             if OnOff:
+                self.m_Bonus = None
                 self.m_FireCount += 1
             else:
                 self.m_FireCount -= 1            
 
-    def __init__(self, map:Map, field_tolerance:int, sprites:Sprites):
+    def __init__(self, m:Map, field_tolerance:int, sprites:Sprites):
         self.m_Sprites:Sprites = sprites
         self.m_Bombs = []
         self.m_Walls = []
-        self.m_Map = map
+        self.m_Map = m
         self.m_Fields = []        
         self.m_Width = self.m_Map. width()
         self.m_Height = self.m_Map.height()
         self.m_BombCounter = 1
-        self.m_Bonuses = ArenaBonuses({})
+        self.m_Bonuses = ArenaBonuses({}, self.m_Sprites)
         self.m_FieldTolerance = field_tolerance
         d = self.m_Map.data()
         walls = []
@@ -319,7 +304,7 @@ class Arena:
         for o in f.m_Objects :
             o.OnFire()
             
-        if f.Type() == ' ':
+        if f.Type() == ' ' or f.HasBonus():
             return SearchResult.Continue
         else:
             return SearchResult.Stop    
@@ -367,11 +352,11 @@ class Arena:
     def ShowFlames(self, fire):
         self._SetFireFields(fire, True)            
 
-    def AddBomb(self, cfg):    
-        cfg.SetID(self.m_BombCounter) 
+    def AddBomb(self, player, pos, cfg):    
         self.m_BombCounter += 1
-        b = Bomb(self, cfg, self.m_Sprites.CreateFieldAnimation('b'), self.m_Sprites.CreateCrossAnimation())
-        pos = b.Position()
+        b = Bomb(self, player, cfg, pos, self.m_BombCounter,
+                 self.m_Sprites.CreateFieldAnimation('b'), 
+                 self.m_Sprites.CreateCrossAnimation())
         print(f'AddBomb:{pos}')
         f = self.GetFieldByPos(b.Position()) 
         if f.Type() != ' ':
