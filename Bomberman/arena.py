@@ -1,4 +1,5 @@
 from enum import Enum
+from tkinter.ttk import Separator
 from screen import Screen
 from sprites import StaticSprite, Animation, Sprites
 from gamemap import Map
@@ -39,18 +40,19 @@ class Bomb:
         Exploding = 1,
         Exploded = 2,
 
-    def __init__(self, arena, player, cfg:BombCfg, bombAnimation, firecrossAnimation):
+    def __init__(self, arena, player, cfg:BombCfg, pos:Vector2D, bombid:int, bombAnimation, firecrossAnimation):
         self.m_Player = player
-        self.m_Position = cfg.Position()
+        self.m_Position = pos
         self.m_BombAnimation = bombAnimation
         self.m_CrossAnimation = firecrossAnimation        
         self.m_WaitTime = cfg.BombTime()
         self.m_Cfg = cfg
+        self.m_ID = bombid
         self.m_Arena:Arena = arena
         self.m_Status = Bomb.Status.Ticking
         
     def __str__(self):
-        return f'B:#={self.m_Cfg.ID()}, Pos={self.m_Position}, WaitTime={self.m_WaitTime}, S={self.m_Status}'
+        return f'B:#={self.m_ID}, Pos={self.m_Position}, WaitTime={self.m_WaitTime}, S={self.m_Status}'
 
     def Explode(self) :
         if self.m_Status != Bomb.Status.Ticking:
@@ -91,7 +93,7 @@ class Bomb:
             pass
   
     def Position(self):
-        return self.m_Cfg.Position()
+        return self.m_Position
     
     def FlameSize(self):
         return self.m_Cfg.FlameSize()
@@ -203,8 +205,11 @@ class Arena:
         def Position(self):
             return self.m_Position
         
-        def HasBonus(self):
+        def GetBonus(self):
             return self.m_Bonus
+
+        def HasBonus(self):
+            return self.m_Bonus is not None
 
         def SetBonus(self, bonus):
             self.m_Bonus = bonus
@@ -214,12 +219,12 @@ class Arena:
 
         def SetOnFire(self, OnOff):
             if OnOff:
-                self.m_Bonus = None
+                self.m_Bonus = None if self.m_Type == ' ' else self.m_Bonus
                 self.m_FireCount += 1
             else:
                 self.m_FireCount -= 1            
 
-    def __init__(self, m:Map, field_tolerance:int, sprites:Sprites):
+    def __init__(self, m:Map, field_tolerance:int, sprites:Sprites, BonusesCfg):
         self.m_Sprites:Sprites = sprites
         self.m_Bombs = []
         self.m_Walls = []
@@ -228,7 +233,7 @@ class Arena:
         self.m_Width = self.m_Map. width()
         self.m_Height = self.m_Map.height()
         self.m_BombCounter = 1
-        self.m_Bonuses = ArenaBonuses({}, self.m_Sprites)
+        self.m_Bonuses = ArenaBonuses(BonusesCfg, self.m_Sprites)
         self.m_FieldTolerance = field_tolerance
         d = self.m_Map.data()
         walls = []
@@ -260,6 +265,10 @@ class Arena:
         print(f"M:{OldPos}->{UpdatedPos}: Field:{f}")
         if f.Type() == 'f':
             self.OnFire(player)
+        b = f.GetBonus()
+        f.SetBonus(None)
+        if b is not None:
+            b.ApplyTo(player.Bonuses())
         self.MoveObject(player, OldPos, UpdatedPos)
         return (UpdatedPos, dir)
      
@@ -303,8 +312,10 @@ class Arena:
         print('FirePoint: ', pos, ' type:', f.Type())                    
         for o in f.m_Objects :
             o.OnFire()
-            
-        if f.Type() == ' ' or f.HasBonus():
+        
+        if f.HasBonus():
+            return SearchResult.Stop
+        if f.Type() == ' ':
             return SearchResult.Continue
         else:
             return SearchResult.Stop    
@@ -367,6 +378,7 @@ class Arena:
         
     def AddWall(self, pos:Vector2D):
         f = self.GetField(pos)
+        f.SetBonus(self.m_Bonuses.GetNextBonus())
         w = Wall(self.m_Sprites.CreateFieldAnimation('w'), pos, f)
         self.m_Walls.append(w);
         
@@ -392,5 +404,8 @@ class Arena:
             w.Draw(scr)        
         for b in self.m_Bombs:
             b.Draw(scr);
-        
+        for f in self.m_Fields:
+            if f.Type() == ' ' and f.HasBonus():
+                scr.DrawSprite(f.GetBonus().img, f.Position()*100)
+            
     

@@ -46,7 +46,7 @@ class Game:
         self.m_Images = images 
         self.m_Map = Map(cfg["map"])
         self.m_FieldTolerance = int(100*self.m_Cfg["field_tolerance"]) 
-        self.m_Arena = Arena(self.m_Map, self.m_FieldTolerance, self.m_Images)
+        self.m_Arena = Arena(self.m_Map, self.m_FieldTolerance, self.m_Images, self.m_Cfg["bonuses"])
         self.m_Players = [];
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
@@ -121,6 +121,7 @@ class Game:
             neighbors = list(utils.NeighboringFields(pos,self.m_FieldTolerance))            
             neighbors.sort(key=lambda v : v.to_tuple())
             t.PrintLn(scr, f"{p.Name()}:{pos}:BF{utils.BestField(pos)}:NF{neighbors}:{p.GetStatus()}");
+            t.PrintLn(scr, f"{p.Bonuses()}")
             p.Draw(scr)
 
 def ShowArena(scr, text, arena:Arena):

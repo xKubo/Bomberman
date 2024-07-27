@@ -54,28 +54,28 @@ appcfg = {
     "images" : configuration.Images,
     "text" : configuration.Text,
     "game" : {
-        #"diag" : True,
-        # "player_defaults" : {
-        #     "step" : 0.25,   # quarter of field
-        #     "bomb_time" : "2s",
-        #     "flame_size" : 3,
-        # },
-        #default bonuses values
         "bonuses" : {
             "defaults" : {
                 "step" : 0.25,   # quarter of field
-                "speed" : 1,
+                "skate" : 0.05,
                 "bomb_time" : "2s",
-                "bomb_count" : 100,
+                "bomb_count" : 1,
                 "flame_size" : 3,
-                "reversed_controls" : False,                            
+                "disease_time" : "20s",
+                "max_flame" : 100,
+                "min_flame" : 2,
+                "quick_explode_after" : "200ms",
+                "slowdown_speed" : 0.1,
             },
-            "generation" : {
-               "max_flame" : {"p":1},
-               "flame" : {"p":10}, 
-               "bomb" : {"p":10}
-               
-                },
+            "occurence" : {
+                "flame" : 10, 
+                "bomb" : 10,
+                "skate" : 5,               
+                "max_flame" : 1,
+                "skull" : 0,
+                "max_skull" : 0,
+                "none" : 10,
+            },
         },
         "players" : [
             {

@@ -49,7 +49,7 @@ class Player:
         if self.m_Status != Player.Status.Normal:
             return;
         self.m_Sprites[self.m_Direction].Update()
-        (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Step, self.m_CurrentKeys)
+        (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Bonuses.Step(), self.m_CurrentKeys)
            
     def OnFire(self):
          if self.m_Status == Player.Status.Normal:
@@ -90,6 +90,9 @@ class Player:
         if self.m_Status == Player.Status.Normal:
             if self.m_CurrentKeys not in ["", "B"]:            
                 self.Move()
+                
+    def Bonuses(self):
+        return self.m_Bonuses
             
     def Draw(self, scr):
         if self.m_Status == Player.Status.Dead:

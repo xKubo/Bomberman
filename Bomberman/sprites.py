@@ -165,7 +165,7 @@ class Sprites:
         
         for k, v in cfg["fields"].items():
             self.m_Fields[k] = self._GenSprites(v, fieldsize, img)
-
+        return img
         
     def TickMS(self):
         return self.m_TickMS
