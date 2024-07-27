@@ -56,8 +56,8 @@ appcfg = {
     "game" : {
         "bonuses" : {
             "defaults" : {
-                "step" : 0.25,   # quarter of field
-                "skate" : 0.05,
+                "step" : 0.2,   # quarter of field
+                "speed_step" : 0.03,
                 "bomb_time" : "2s",
                 "bomb_count" : 1,
                 "flame_size" : 3,
@@ -68,9 +68,9 @@ appcfg = {
                 "slowdown_speed" : 0.1,
             },
             "occurence" : {
-                "flame" : 10, 
-                "bomb" : 10,
-                "skate" : 5,               
+                "flame" : 8, 
+                "bomb" : 8,
+                "skate" : 8,               
                 "max_flame" : 1,
                 "skull" : 0,
                 "max_skull" : 0,

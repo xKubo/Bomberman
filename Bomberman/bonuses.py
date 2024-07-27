@@ -22,7 +22,8 @@ class PlayerBonuses:
         self.m_MinFlame = cfg["min_flame"]
         self.m_FlameSize = cfg["flame_size"]
         self.m_BombTime = cfg["bomb_time"]
-        self.m_Speed = cfg["skate"]
+        self.m_Speed = 0
+        self.m_SpeedStep = cfg["speed_step"]
         self.m_Step = (int)(cfg["step"]*100)
         self.m_HasMaxFlame = False
         self.m_Times = {
@@ -35,7 +36,7 @@ class PlayerBonuses:
         self.m_Bonuses = []
 
     def __str__(self):
-        return f'BCount={self.m_BombCount}, FS={self.FlameSize()}, Spd={self.m_Speed}'
+        return f'BCount={self.m_BombCount}, FS={self.FlameSize()}, Step={self.Step()}, Speed = {self.m_Speed}, SpdStep={self.m_SpeedStep}'
 
     def SetSkull(self, times):
         for t in range(times):
@@ -61,7 +62,7 @@ class PlayerBonuses:
     def Step(self):
   #     if self.m_Times["slowdown"] > 0:
  #          return 
-        return self.m_Step # + int(100*self.m_Speed)
+        return int( self.m_Step  + 100*self.m_SpeedStep*self.m_Speed)
     
 
 class Bonus:
