@@ -51,7 +51,7 @@ class Game:
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
         default_bonuses = self.m_Cfg["bonuses"]["defaults"]
-        utils.UpdateTimeToTicks(default_bonuses, ["bomb_time", "disease_time", "quick_explode_time"], images.TickMS())
+        utils.UpdateTimeToTicks(default_bonuses, images.TickMS())
         for i,pcfg in enumerate(cfg["players"]):
             playerbonuses = pcfg.get("bonuses", {})
             bonuses = {**default_bonuses, **playerbonuses} # merge player bonuses and defaults
@@ -114,14 +114,14 @@ class Game:
         ShowArena(scr, t, self.m_Arena)    
         self.m_Arena.Draw(scr)
 
-
         t.SetPos(Vector2D(self.m_Map.width()*24, 0))
         for p in self.GetPlayers():
             pos = p.Position()           
             neighbors = list(utils.NeighboringFields(pos,self.m_FieldTolerance))            
             neighbors.sort(key=lambda v : v.to_tuple())
             t.PrintLn(scr, f"{p.Name()}:{pos}:BF{utils.BestField(pos)}:NF{neighbors}:{p.GetStatus()}");
-            t.PrintLn(scr, f"{p.Bonuses()}")
+            t.PrintLn(scr, f"ABs={p.ActiveBombCount()}:{p.Bonuses()}")
+            t.PrintLn(scr, f"{p.Bonuses().Diseases()}")
             p.Draw(scr)
 
 def ShowArena(scr, text, arena:Arena):

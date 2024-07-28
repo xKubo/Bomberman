@@ -199,8 +199,7 @@ class Arena:
             self.m_Type = NewType
 
         def SetOnFire(self, OnOff):
-            if OnOff:
-                self.m_Bonus = None if self.m_Type == ' ' else self.m_Bonus
+            if OnOff:                
                 self.m_FireCount += 1
             else:
                 self.m_FireCount -= 1            
@@ -295,6 +294,8 @@ class Arena:
             o.OnFire()
         
         if f.HasBonus():
+            if f.Type() == ' ':
+                f.SetBonus(None)
             return SearchResult.Stop
         if f.Type() == ' ':
             return SearchResult.Continue
@@ -352,10 +353,11 @@ class Arena:
         print(f'AddBomb:{pos}')
         f = self.GetFieldByPos(b.Position()) 
         if f.Type() != ' ':
-            return      # can add bomb only on free space
+            return False    # can add bomb only on free space
         f.SetType('b')
         self.m_Bombs.append(b)
         f.AddObject(b)
+        return True
         
     def AddWall(self, pos:Vector2D):
         f = self.GetField(pos)

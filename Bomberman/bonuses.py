@@ -40,9 +40,12 @@ class PlayerBonuses:
         self.m_TimeKeys = list(self.m_Times.keys())
         self.m_Bonuses = []
 
-    def __str__(self):
+    def __str__(self):        
+        return f'BCount={self.m_BombCount}, FS={self.FlameSize()}, Step={self.Step()}, Speed = {self.m_Speed}, SpdStep={self.m_SpeedStep}'
+
+    def Diseases(self):
         diseases = [ (k, v) for k, v in self.m_Times.items() if v > 0]
-        return f'BCount={self.m_BombCount}, FS={self.FlameSize()}, Step={self.Step()}, Speed = {self.m_Speed}, SpdStep={self.m_SpeedStep}, D={diseases}'
+        return f'D={diseases}'
 
     def SetSkull(self, times):
         random.shuffle(self.m_TimeKeys)

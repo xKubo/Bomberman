@@ -50,9 +50,6 @@ class Player:
             return;
         self.m_Sprites[self.m_Direction].Update()
         
-        if self.m_Bonuses.AutoBomb() and 'B' not in self.m_CurrentKeys:
-            self.m_CurrentKeys+='B'          
-            
         keys = RevertKeys(self.m_CurrentKeys) if self.m_Bonuses.AreControlsReversed() else self.m_CurrentKeys
         
         (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Bonuses.Step(), keys)
@@ -65,20 +62,27 @@ class Player:
             return;
         pos = self.Position()
         pos = BestField(pos)*100
-        if (self.m_ActiveBombCount < self.m_Bonuses.MaxActiveBombCount()):
-            self.m_ActiveBombCount += 1
-            self.m_Arena.AddBomb(self, pos, self.m_Bonuses.BombConfiguration())        
+        if (self.m_ActiveBombCount < self.m_Bonuses.MaxActiveBombCount()):            
+            added = self.m_Arena.AddBomb(self, pos, self.m_Bonuses.BombConfiguration())        
+            if added:
+                self.m_ActiveBombCount += 1
+               
 
     def OnBombExploded(self):
         self.m_ActiveBombCount -= 1
 
     def OnCmd(self, cmd):
+        if self.m_Bonuses.AutoBomb():
+            self.DeployBomb()
         if cmd!= self.m_CurrentKeys:
             if 'B' in cmd and not 'B' in self.m_CurrentKeys:
                 self.m_CurrentKeys = cmd
                 self.DeployBomb()
                 return
             self.m_CurrentKeys = cmd
+
+    def ActiveBombCount(self):
+        return self.m_ActiveBombCount
          
 
     def Update(self, timeinfo):

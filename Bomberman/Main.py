@@ -67,7 +67,7 @@ appcfg = {
         "bonuses" : {
             "defaults" : {
                 "step" : 0.2,   # quarter of field
-                "slowdown_step" : 0.05,
+                "slowdown_step" : 0.07,
                 "speed_step" : 0.03,
                 "bomb_time" : "2s",
                 "bomb_count" : 1,

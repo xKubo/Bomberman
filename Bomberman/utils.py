@@ -76,9 +76,10 @@ def ParseTimeLineCfg(cfg):
     res["frame_time"] = ParseTimeToMS(cfg["time"])
     return res;
 
-def UpdateTimeToTicks(cfg, Keys, TickMS:int):
-    for k in Keys:
-        cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
+def UpdateTimeToTicks(cfg, TickMS:int):
+    for k, v in cfg.items():
+        if k.endswith("_time"):
+            cfg[k] = ParseTimeToMS(cfg[k])//TickMS;
 
 
 def CanGo(fields, OldPos:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
