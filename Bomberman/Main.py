@@ -9,8 +9,17 @@ import configuration
 from Vec2d import Vector2D
 from screen import Screen
 
-
-
+class TimeInfo:
+    def __init__(self, fps:int):
+        self.m_FPS = fps
+        self.m_Tick = 1000//self.m_FPS
+    
+    def FPS(self):
+        return self.m_FPS
+    
+    def Tick(self):
+        return self.m_Tick
+       
 
 class App:
    
@@ -21,7 +30,6 @@ class App:
         return keyboard.KeyboardController(self.m_Keyboard, obj, cfg["keys"])
 
     def __init__(self, cfg):
-
         displaysize = (1920, 1080)
         cfg["game"]["display_size"] = displaysize
         self.m_Cfg = cfg
@@ -29,8 +37,10 @@ class App:
         self.m_Keyboard = keyboard.Keyboard()
         self.m_Clock = pygame.time.Clock()         
         self.m_Screen = Screen(pygame.display.set_mode(displaysize))
+        self.m_TimeInfo = TimeInfo(cfg["fps"])
         self.m_Images = sprites.Sprites(self.m_Cfg["images"], cfg["fps"], self.m_Cfg["text"])
         self.m_Game = game.Game(self.m_Cfg['game'], self.m_Images, self.CreateController, self.m_Screen)
+
         
 
     def Run(self):  
@@ -42,7 +52,7 @@ class App:
                     return         
             self.m_Screen.m_Screen.fill('black')
             self.m_Keyboard.Update()
-            self.m_Game.Update()
+            self.m_Game.Update(self.m_TimeInfo)
             self.m_Game.Draw()
             pygame.display.flip()             
             self.m_Clock.tick(fps) 
@@ -57,6 +67,7 @@ appcfg = {
         "bonuses" : {
             "defaults" : {
                 "step" : 0.2,   # quarter of field
+                "slowdown_step" : 0.05,
                 "speed_step" : 0.03,
                 "bomb_time" : "2s",
                 "bomb_count" : 1,
@@ -64,16 +75,15 @@ appcfg = {
                 "disease_time" : "20s",
                 "max_flame" : 100,
                 "min_flame" : 2,
-                "quick_explode_after" : "200ms",
-                "slowdown_speed" : 0.1,
+                "quick_explode_time" : "200ms",                
             },
             "occurence" : {
                 "flame" : 8, 
                 "bomb" : 8,
                 "skate" : 8,               
                 "max_flame" : 1,
-                "skull" : 0,
-                "max_skull" : 0,
+                "skull" : 5,
+                "max_skull" : 1,
                 "none" : 10,
             },
         },

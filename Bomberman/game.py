@@ -51,7 +51,7 @@ class Game:
         self.m_Commands = Commands()
         self.m_CreateController = createcontroller
         default_bonuses = self.m_Cfg["bonuses"]["defaults"]
-        utils.UpdateTimeToTicks(default_bonuses, ["bomb_time"], images.TickMS())
+        utils.UpdateTimeToTicks(default_bonuses, ["bomb_time", "disease_time", "quick_explode_time"], images.TickMS())
         for i,pcfg in enumerate(cfg["players"]):
             playerbonuses = pcfg.get("bonuses", {})
             bonuses = {**default_bonuses, **playerbonuses} # merge player bonuses and defaults
@@ -87,10 +87,10 @@ class Game:
     def GetAnimation(self, anim):
         return self.m_Images.CreateFieldAnimation(anim)
     
-    def Update(self):  
-        self.m_Arena.Update()
+    def Update(self, timeinfo):  
+        self.m_Arena.Update(timeinfo)
         for p in self.m_Players:
-            p.Update()   
+            p.Update(timeinfo)   
          
     
     def Arena(self):

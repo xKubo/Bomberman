@@ -3,6 +3,7 @@ from operator import setitem
 from random import randint
 from screen import Screen
 import utils
+import random
 
 class BombCfg:
     def __init__(self, bomb_time, flame_size):
@@ -23,8 +24,10 @@ class PlayerBonuses:
         self.m_FlameSize = cfg["flame_size"]
         self.m_BombTime = cfg["bomb_time"]
         self.m_Speed = 0
+        self.m_DiseaseTime = cfg["disease_time"]
         self.m_SpeedStep = cfg["speed_step"]
-        self.m_Step = (int)(cfg["step"]*100)
+        self.m_Step = int(100*cfg["step"])
+        self.m_SlowDownStep = int(100*cfg["slowdown_step"])
         self.m_HasMaxFlame = False
         self.m_Times = {
             "min_flame" : 0,
@@ -33,20 +36,23 @@ class PlayerBonuses:
             "auto_bomb" : 0,
             "quick_explode" : 0,
             }
+        self.m_TimeKeys = list(self.m_Times.keys())
         self.m_Bonuses = []
 
     def __str__(self):
-        return f'BCount={self.m_BombCount}, FS={self.FlameSize()}, Step={self.Step()}, Speed = {self.m_Speed}, SpdStep={self.m_SpeedStep}'
+        diseases = [ (k, v) for k, v in self.m_Times.items() if v > 0]
+        return f'BCount={self.m_BombCount}, FS={self.FlameSize()}, Step={self.Step()}, Speed = {self.m_Speed}, SpdStep={self.m_SpeedStep}, D={diseases}'
 
     def SetSkull(self, times):
-        for t in range(times):
-            pass
+        random.shuffle(self.m_TimeKeys)
+        for i in range(times):
+            self.m_Times[self.m_TimeKeys[i]] = self.m_DiseaseTime
        
-    def Update(self, tick):
-        self.m_Times = {n:(t-tick if t>=0 else t) for (n,t) in self.m_Times.iteritems()}
+    def Update(self, timeinfo):
+        self.m_Times = {n:(t-1 if t>=0 else t) for (n,t) in self.m_Times.items()}
 
     def BombConfiguration(self):
-        return BombCfg(self.m_BombTime, self.m_FlameSize)
+        return BombCfg(self.m_BombTime, self.FlameSize())
     
     def MaxActiveBombCount(self):
         return self.m_BombCount
@@ -59,10 +65,13 @@ class PlayerBonuses:
             return self.m_MinFlame
         return self.m_MaxFlame if self.m_HasMaxFlame else self.m_FlameSize
 
+    def IsSkullActive(self):
+        return max(self.m_Times) > 0
+
     def Step(self):
-  #     if self.m_Times["slowdown"] > 0:
- #          return 
-        return int( self.m_Step  + 100*self.m_SpeedStep*self.m_Speed)
+       if self.m_Times["slowdown"] > 0:
+           return int(self.m_SlowDownStep)
+       return int( self.m_Step  + 100*self.m_SpeedStep*self.m_Speed)
     
 
 class Bonus:

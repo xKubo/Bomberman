@@ -8,26 +8,7 @@ from utils import *
 from diag import Log
 from bonuses import ArenaBonuses,BombCfg
 
-EmptyDir = ' '
-Dirs = 'LURD'
 
-def OppositeDirs(Dir):
-    index = Dirs.index(Dir)
-    return (Dirs[(index+1)%4], Dirs[(index+3)%4])
-
-def ComputeNewDir(LastDir, NewChars, CanGo):
-    if NewChars=='':
-        return LastDir
-    CurrDir = NewChars[0]
-    if LastDir == EmptyDir:
-        return CurrDir
-    if LastDir not in NewChars:
-        return CurrDir
-    opp = OppositeDirs(LastDir)
-    for o in opp:
-        if o in NewChars and CanGo(o):
-            return o
-    return LastDir
 
 class SearchResult(Enum):
     Continue = 0,
@@ -395,7 +376,7 @@ class Arena:
                 self.GetFieldByPos(o.Position()).DelObject(o)
         return  [o for o in objs if not o.IsDestroyed()]  
 
-    def Update(self):
+    def Update(self, timeinfo):
         self.m_Bombs = self._UpdateObjects(self.m_Bombs)
         self.m_Walls = self._UpdateObjects(self.m_Walls)
 

@@ -4,7 +4,7 @@ import sprites
 from bonuses import PlayerBonuses
 from Vec2d import Vector2D
 
-from utils import BestField, DirToVec, MiddleOfTheField
+from utils import BestField, DirToVec, MiddleOfTheField, RevertKeys
 from arena import Arena, BombCfg, EmptyDir, Dirs
 
 class Player:      
@@ -49,8 +49,8 @@ class Player:
         if self.m_Status != Player.Status.Normal:
             return;
         self.m_Sprites[self.m_Direction].Update()
-        (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Bonuses.Step(), self.m_CurrentKeys)
-           
+        keys = RevertKeys(self.m_CurrentKeys) if self.m_Bonuses.AreControlsReversed() else self.m_CurrentKeys
+        (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Bonuses.Step(), keys)
     def OnFire(self):
          if self.m_Status == Player.Status.Normal:
             self.m_Status = Player.Status.Dying   
@@ -76,7 +76,8 @@ class Player:
             self.m_CurrentKeys = cmd
          
 
-    def Update(self):
+    def Update(self, timeinfo):
+        self.m_Bonuses.Update(timeinfo);
         if self.m_Status == Player.Status.Dead:
             return
         if self.m_Status == Player.Status.Dying:

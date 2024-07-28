@@ -1,4 +1,3 @@
-from turtle import Vec2D
 from Vec2d import Vector2D, Error
 
         
@@ -99,4 +98,36 @@ def CanGo(fields, OldPos:Vector2D, dir:Vector2D, step:int, FieldTolerance:int):
     if CanVisitAll:
         return CanVisitResult
     return CannotVisitResult
+
+EmptyDir = ' '
+Dirs = 'LURD'
+
+def OppositeDirs(Dir):
+    index = Dirs.index(Dir)
+    return (Dirs[(index+1)%4], Dirs[(index+3)%4])
+
+def ComputeNewDir(LastDir, NewChars, CanGo):
+    if NewChars=='':
+        return LastDir
+    CurrDir = NewChars[0]
+    if LastDir == EmptyDir:
+        return CurrDir
+    if LastDir not in NewChars:
+        return CurrDir
+    opp = OppositeDirs(LastDir)
+    for o in opp:
+        if o in NewChars and CanGo(o):
+            return o
+    return LastDir
+   
+
+
+def RevertKeys(keys):
+    res = []
+    for k in keys:
+        if k == 'B':
+            continue
+        i = Dirs.index(k)
+        res.append(Dirs[(i+2)%4])
+    return res
     
