@@ -47,8 +47,8 @@ Images = {
                 'bomb':  (3,0, 1),   
                 'kick':  (0,1, 1),
                 'skate': (1,1, 1),
-                'max_skull': (3,1, 1),
-                'skull': (3,2, 1),
+                'max_skull': (3,2, 1),
+                'skull': (3,1, 1),
             }
                     
         }                          
