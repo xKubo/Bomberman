@@ -74,8 +74,8 @@ appcfg = {
                 "flame_size" : 3,
                 "disease_time" : "20s",
                 "max_flame" : 100,
-                "min_flame" : 2,
-                "quick_explode_time" : "200ms",                
+                "min_flame" : 1,
+                "quick_explode_time" : "750ms",                
             },
             "occurence" : {
                 "flame" : 8, 

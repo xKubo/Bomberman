@@ -49,7 +49,12 @@ class Player:
         if self.m_Status != Player.Status.Normal:
             return;
         self.m_Sprites[self.m_Direction].Update()
+        
+        if self.m_Bonuses.AutoBomb() and 'B' not in self.m_CurrentKeys:
+            self.m_CurrentKeys+='B'          
+            
         keys = RevertKeys(self.m_CurrentKeys) if self.m_Bonuses.AreControlsReversed() else self.m_CurrentKeys
+        
         (self.m_Position, self.m_Direction) = self.m_Arena.MovePlayer(self, self.m_Position, self.m_Direction, self.m_Bonuses.Step(), keys)
     def OnFire(self):
          if self.m_Status == Player.Status.Normal:

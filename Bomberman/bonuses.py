@@ -23,6 +23,7 @@ class PlayerBonuses:
         self.m_MinFlame = cfg["min_flame"]
         self.m_FlameSize = cfg["flame_size"]
         self.m_BombTime = cfg["bomb_time"]
+        self.m_QuickExplodeTime = cfg["quick_explode_time"]
         self.m_Speed = 0
         self.m_DiseaseTime = cfg["disease_time"]
         self.m_SpeedStep = cfg["speed_step"]
@@ -52,13 +53,16 @@ class PlayerBonuses:
         self.m_Times = {n:(t-1 if t>=0 else t) for (n,t) in self.m_Times.items()}
 
     def BombConfiguration(self):
-        return BombCfg(self.m_BombTime, self.FlameSize())
+        return BombCfg(self.m_QuickExplodeTime if self.m_Times["quick_explode"] > 0 else self.m_BombTime, self.FlameSize())
     
     def MaxActiveBombCount(self):
         return self.m_BombCount
     
     def AreControlsReversed(self):
         return self.m_Times["reverse"] > 0
+
+    def AutoBomb(self):
+        return self.m_Times["auto_bomb"] > 0
 
     def FlameSize(self):
         if self.m_Times["min_flame"] > 0:
